@@ -33,3 +33,15 @@ Ticket System
 Payment System
 - 
 ```
+
+
+
+#### Resources:
+##### Project Related:
+- [Shadcn-svelte - ui library](!https://www.shadcn-svelte.com/)
+- [Svelte Sonner - toast message lib](!https://svelte-sonner.vercel.app/) 
+- [Pocketbase - backend as a file (firebase alternative)](!https://pocketbase.io/)
+- [Pocketbase Host - gives generous free trial](!https://pockethost.io/docs/overview/introduction/)
+- [Mailgun - Email api](https://www.mailgun.com/)
+##### Other Stuff:
+- Some Link :3
