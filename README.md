@@ -1,6 +1,11 @@
 # 471proj
 471proj
 
+### Temp Credentials
+`https://p471.pockethost.io/_`
+temp_user: `temp-admin@shrestho.me`
+temp_pass: `Hh5ggAYIvx9y6_79-WjvdyLKsx9KzG0C`
+Please create admin user and delete this account.
 
 Features:
 
@@ -33,6 +38,7 @@ Ticket System
 Payment System
 - 
 ```
+
 
 
 
