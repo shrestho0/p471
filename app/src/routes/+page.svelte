@@ -28,3 +28,17 @@
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 <Button on:click={handleSomeClick}>Click me</Button>
+<div class="p-8">
+	Debug pages:
+	<ul class=" flex flex-col">
+		<li>
+			- <a href="/login">Login</a>
+		</li>
+		<li>
+			- <a href="/register">Register</a>
+		</li>
+		<li>
+			- <a href="/concepts/site-customizer">Concept: Site Customizer </a>
+		</li>
+	</ul>
+</div>
