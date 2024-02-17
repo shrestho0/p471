@@ -32,10 +32,13 @@
 	Debug pages:
 	<ul class=" flex flex-col">
 		<li>
-			- <a href="/login">Login</a>
+			- <a href="/login">User Login</a>
 		</li>
 		<li>
-			- <a href="/register">Register</a>
+			- <a href="/register">User Register</a>
+		</li>
+		<li>
+			- <a href="/_/login">Admin Login</a>
 		</li>
 		<li>
 			- <a href="/concepts/site-customizer">Concept: Site Customizer </a>

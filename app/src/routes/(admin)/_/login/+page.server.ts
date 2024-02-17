@@ -3,6 +3,17 @@ import type { PageServerLoad } from "./$types";
 import { DBTables, ErrorMessages, setPBSiteKey } from "@/utils/server";
 import { AppLinks } from "@/utils/common";
 
+export const load: PageServerLoad = async ({ locals, parent }) => {
+    await parent();
+    if (locals.user) {
+        return redirect(302, AppLinks.USER_DASHBOARD);
+    }
+
+    if (locals.admin) {
+        return redirect(302, AppLinks.ADMIN_ROUTER);
+    }
+
+};
 
 
 export const actions: Actions = {
@@ -17,26 +28,14 @@ export const actions: Actions = {
 
         if (!email || !password) return fail(400, { message: ErrorMessages.ALL_FIELDS_REQUIRED });
 
-        setPBSiteKey(locals.pb); // To tell pb that this is from web app
+        // setPBSiteKey(locals.pb); // To tell pb that this is from web app
 
-        // Check if email exists in database
-        const userWithEmail = await locals.pb.collection(DBTables.users).getFirstListItem(`email = "${email}"`).catch((e) => {
-            console.log(e); // DEBUG
-            return null;
+        const adminX = await locals.pb.admins.authWithPassword(email, password).catch((e) => {
+            // console.error(e);
+            return { error: { message: e.message } };
         });
+        if (adminX.error) return fail(400, { message: adminX.error.message });
 
-        if (!userWithEmail) {
-            return fail(400, { message: ErrorMessages.EMAIL_NOT_FOUND })
-        }
-
-        const authUser = await locals.pb.collection(DBTables.users).authWithPassword(email, password).catch((e) => {
-            console.log(e); // DEBUG
-            return null;
-        });
-
-        if (!authUser) {
-            return fail(400, { message: ErrorMessages.PASSWORD_INCORRECT })
-        }
 
 
         // Everthing should be fine here
