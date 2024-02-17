@@ -45,19 +45,11 @@
 </script>
 
 <div class="container relative h-screen flex-col items-center justify-center">
-	<Button
-		href={AppLinks.USER_REGISTER}
-		variant="ghost"
-		class="absolute right-4 top-4 md:right-8 md:top-8"
-	>
-		Register
-	</Button>
-
 	<div class="flex h-full flex-col items-center justify-center space-y-6 lg:p-8">
 		<div class="flex flex-col gap-8">
 			<div class="flex flex-col space-y-2 text-center">
-				<h1 class="text-2xl font-semibold tracking-tight">Login to your account</h1>
-				<p class="text-sm text-muted-foreground">Enter your email below to login</p>
+				<h1 class="text-2xl font-semibold tracking-tight">Admin Login</h1>
+				<p class="text-sm text-muted-foreground">Enter your credentials below to login</p>
 			</div>
 
 			<div class="">
@@ -68,7 +60,7 @@
 							<Input
 								name="email"
 								id="email"
-								placeholder="hello@example.com"
+								placeholder="admin@example.com"
 								type="email"
 								disabled={isLoading}
 								required
