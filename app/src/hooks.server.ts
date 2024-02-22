@@ -1,9 +1,9 @@
 import { PB_HOST, PB_SITE_KEY } from "$env/static/private";
-import { setPBSiteKey } from "@/utils/server";
 import type { Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
 import Pocketbase from 'pocketbase';
+
 
 /**
  * Authentication Handler, Event Handler/Interceptor
@@ -32,13 +32,16 @@ export const AuthHandler = (async ({ event, resolve }) => {
 
         if (event.locals.pb.authStore.isValid) {
 
+
             if (event.locals.pb.authStore.isAdmin) {
+
                 event.locals.pb.admins.authRefresh();
                 event.locals.admin = structuredClone(event.locals.pb.authStore.model);
             } else if (event.locals.pb.authStore.isAuthRecord) {
                 event.locals.pb.collection('users').authRefresh();
                 event.locals.user = structuredClone(event.locals.pb.authStore.model);
             }
+
         }
     } catch (_) {
         // console.log("AuthHandler Error", _);

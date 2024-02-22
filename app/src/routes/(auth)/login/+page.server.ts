@@ -1,7 +1,9 @@
 import { redirect, type Actions, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { DBTables, ErrorMessages, setPBSiteKey } from "@/utils/server";
-import { AppLinks } from "@/utils/common";
+import { ErrorMessages } from "@/utils/messages";
+import { setPBSiteKey } from "@/utils/index.server";
+import { AppLinks } from "@/utils/app-links";
+import DBTables from "@/utils/db-tables";
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
     if (locals.user) {

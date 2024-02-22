@@ -1,8 +1,11 @@
+import { AppLinks } from "@/utils/app-links";
+import { setPBSiteKey } from "@/utils/index.server";
+import { ErrorMessages } from "@/utils/messages";
+import { validRegex } from "@/utils/validations";
 import { redirect, type Actions, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { DBTables, ErrorMessages, setPBSiteKey } from "@/utils/server";
-import { validRegex } from "@/utils/common/validations";
-import { AppLinks } from "@/utils/common";
+import dbTables from "@/utils/db-tables";
+
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
     await parent();
@@ -77,12 +80,12 @@ export const actions: Actions = {
 
 
         // Check if email exists in database
-        const userWithEmail = await locals.pb.collection(DBTables.users).getFirstListItem(`email = "${email}"`).catch((e) => {
+        const userWithEmail = await locals.pb.collection(dbTables.users).getFirstListItem(`email = "${email}"`).catch((e) => {
             // console.log(e); // DEBUG
             return null;
         });
 
-        const userWithUsername = await locals.pb.collection(DBTables.users).getFirstListItem(`username = "${username}"`).catch((e) => {
+        const userWithUsername = await locals.pb.collection(dbTables.users).getFirstListItem(`username = "${username}"`).catch((e) => {
             // console.log(e); // DEBUG
             return null;
         });
@@ -100,7 +103,7 @@ export const actions: Actions = {
         }
 
         // Create user
-        const newUser = await locals.pb.collection(DBTables.users).create({
+        const newUser = await locals.pb.collection(dbTables.users).create({
             username,
             email,
             name,

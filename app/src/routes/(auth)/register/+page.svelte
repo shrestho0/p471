@@ -8,8 +8,7 @@
 	import { AlertTriangle, CircleDotDashed } from 'lucide-svelte';
 	import * as Alert from '$lib/components/ui/alert';
 	import { toast } from 'svelte-sonner';
-	import { AppLinks } from '@/utils/common';
-	import PreDebug from '@/dev/PreDebug.svelte';
+	import { AppLinks } from '@/utils/app-links';
 	import dummyData from '@/dev/dummyData';
 	import DummyDataSection from '@/dev/dummyDataSection.svelte';
 
@@ -47,6 +46,16 @@
 		}
 	];
 
+	function populateRandomData(idx: number) {
+		const randomData = dummyData[idx];
+
+		fields[0].value = randomData.email;
+		fields[1].value = randomData.username;
+		fields[2].value = randomData.name;
+		fields[3].value = randomData.password;
+		fields[4].value = randomData.password;
+	}
+
 	function enhancedSubmission() {
 		isLoading = true;
 		return async ({ result }: any) => {
@@ -74,21 +83,11 @@
 				}
 			}
 
-			isLoading = false;
-
 			await applyAction(result);
 			invalidateAll();
+
+			isLoading = false;
 		};
-	}
-
-	function populateRandomData(idx: number) {
-		const randomData = dummyData[idx];
-
-		fields[0].value = randomData.email;
-		fields[1].value = randomData.username;
-		fields[2].value = randomData.name;
-		fields[3].value = randomData.password;
-		fields[4].value = randomData.password;
 	}
 
 	function onSubmit() {
@@ -98,34 +97,24 @@
 	}
 </script>
 
-<div class="container relative h-screen flex-col items-center justify-center">
-	<Button
-		href={AppLinks.USER_LOGIN}
-		variant="ghost"
-		class="absolute right-4 top-4 md:right-8 md:top-8"
-	>
-		Login
-	</Button>
+<div class="flex h-[80%] flex-col items-center justify-center space-y-6 lg:p-6 lg:pt-0">
+	<div class="flex flex-col gap-8 md:gap-16">
+		<div class="flex flex-col space-y-2 text-center">
+			<h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
+			<p class="text-muted-foreground text-sm">Fill out the form below to create your account</p>
+		</div>
+		<DummyDataSection {populateRandomData} />
 
-	<div class="flex h-full flex-col items-center justify-center space-y-6 lg:p-8">
-		<div class="flex flex-col gap-8">
-			<div class="flex flex-col space-y-2 text-center">
-				<h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
-				<p class="text-muted-foreground text-sm">Fill out the form below to create your account</p>
-			</div>
-			<!-- dummy data section -->
-			<DummyDataSection {populateRandomData} />
-			<!-- <PreDebug data={{ fieldErrors }} /> -->
-			<div class="">
-				<form
-					method="post"
-					action=""
-					on:submit={onSubmit}
-					use:enhance={enhancedSubmission}
-					autocomplete="off"
-				>
-					<div class="grid gap-2">
-						<!-- <div class="grid gap-1">
+		<div class="">
+			<form
+				method="post"
+				action=""
+				on:submit={onSubmit}
+				use:enhance={enhancedSubmission}
+				autocomplete="off"
+			>
+				<div class="grid gap-2">
+					<!-- <div class="grid gap-1">
 							<Label class="sr-only" for="email">Email</Label>
 							<Input
 								name="email"
@@ -136,56 +125,55 @@
 								required
 							/>
 						</div> -->
-						{#each fields as inputF (inputF.name)}
-							<div class="grid gap-1">
-								<Label class="sr-only" for={inputF.name}>{inputF.name}</Label>
-								<Input
-									name={inputF.name}
-									id={inputF.name}
-									placeholder={inputF.placeholder}
-									type={inputF.type}
-									bind:value={inputF.value}
-									disabled={isLoading}
-									autocomplete="off"
-								/>
-								{#if fieldErrors[inputF.name]}
-									<p class="text-sm text-red-500">
-										{fieldErrors[inputF.name]}
-									</p>
-								{/if}
-								<!-- required -->
-							</div>
-						{/each}
-
-						{#if finalErrorMessage}
-							<Alert.Root variant="destructive">
-								<!-- <Alert.Title>Error</Alert.Title> -->
-								<Alert.Description class="flex items-center justify-center gap-4 ">
-									<AlertTriangle class="h-4 w-4" />
-									{finalErrorMessage}
-								</Alert.Description>
-							</Alert.Root>
-						{/if}
-						<Button type="submit" disabled={isLoading}>
-							{#if isLoading}
-								<CircleDotDashed color="white" class="mr-2 h-4 w-4 animate-spin" />
+					{#each fields as inputF (inputF.name)}
+						<div class="grid gap-1">
+							<Label class="sr-only" for={inputF.name}>{inputF.name}</Label>
+							<Input
+								name={inputF.name}
+								id={inputF.name}
+								bind:value={inputF.value}
+								placeholder={inputF.placeholder}
+								type={inputF.type}
+								disabled={isLoading}
+								autocomplete="off"
+							/>
+							{#if fieldErrors[inputF.name]}
+								<p class="text-sm text-red-500">
+									{fieldErrors[inputF.name]}
+								</p>
 							{/if}
-							Sign Up
-						</Button>
-					</div>
-				</form>
-			</div>
-			<p class="text-muted-foreground px-8 text-center text-sm">
-				By clicking continue, you agree to our{' '}
-				<a href="/terms" class="hover:text-primary underline underline-offset-4">
-					Terms of Service
-				</a>{' '}
-				and{' '}
-				<a href="/privacy" class="hover:text-primary underline underline-offset-4">
-					Privacy Policy
-				</a>
-				.
-			</p>
+							<!-- required -->
+						</div>
+					{/each}
+
+					{#if finalErrorMessage}
+						<Alert.Root variant="destructive">
+							<!-- <Alert.Title>Error</Alert.Title> -->
+							<Alert.Description class="flex items-center justify-center gap-4 ">
+								<AlertTriangle class="h-4 w-4" />
+								{finalErrorMessage}
+							</Alert.Description>
+						</Alert.Root>
+					{/if}
+					<Button type="submit" disabled={isLoading}>
+						{#if isLoading}
+							<CircleDotDashed color="white" class="mr-2 h-4 w-4 animate-spin" />
+						{/if}
+						Sign Up
+					</Button>
+				</div>
+			</form>
 		</div>
+		<p class="text-muted-foreground px-8 text-center text-sm">
+			By clicking continue, you agree to our{' '}
+			<a href="/terms" class="hover:text-primary underline underline-offset-4">
+				Terms of Service
+			</a>{' '}
+			and{' '}
+			<a href="/privacy" class="hover:text-primary underline underline-offset-4">
+				Privacy Policy
+			</a>
+			.
+		</p>
 	</div>
 </div>

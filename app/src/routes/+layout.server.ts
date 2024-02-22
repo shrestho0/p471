@@ -7,9 +7,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
     // Debugging
     if (locals.admin) {
-        console.log('Admin:', Boolean(locals.admin), locals?.admin?.email);
+        console.log('Admin:', locals.admin);
     } else if (locals.user) {
-        console.log('User:', Boolean(locals.user), locals?.user?.email);
+        console.log('User:', locals.user);
     }
 
     return {

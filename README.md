@@ -10,8 +10,8 @@ Please create admin user and delete this account.
 ENV DATA:
 
 ```
-PB_HOST=https://p471.pockethost.io/ #Pocketbase Host
-PB_SITE_KEY=01HPV38C41AYV5KA6BGJJEWHBK #PB Site Auth Key (to prevent pb outside requests)
+PB_HOST=https://p471.pockethost.io/  
+PB_SITE_KEY=01HPV38C41AYV5KA6BGJJEWHBK
 ```
 
 
