@@ -1,5 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import PreDebug from '@/dev/PreDebug.svelte';
 </script>
 
-<h1>Error</h1>
+<div class="bg-gray-50">
+	Error Page
+	<PreDebug data={$page} />
+</div>

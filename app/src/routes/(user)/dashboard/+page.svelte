@@ -1,7 +1,6 @@
 <script lang="ts">
 	import PreDebug from '@/dev/PreDebug.svelte';
 	import Logout from '@/ui/Logout.svelte';
-
 	export let data;
 </script>
 

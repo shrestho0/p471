@@ -1,6 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { AppLinks } from "@/utils/common";
+import { AppLinks } from "@/utils/app-links";
 
 
 /**

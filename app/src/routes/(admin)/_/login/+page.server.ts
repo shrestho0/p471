@@ -1,7 +1,8 @@
-import { redirect, type Actions, fail } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
-import { DBTables, ErrorMessages, setPBSiteKey } from "@/utils/server";
-import { AppLinks } from "@/utils/common";
+
+import { fail, redirect } from "@sveltejs/kit";
+import type { PageServerLoad, Actions } from "./$types";
+import { AppLinks } from "@/utils/app-links";
+import { ErrorMessages } from "@/utils/messages";
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
     await parent();
