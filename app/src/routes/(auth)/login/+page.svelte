@@ -9,7 +9,8 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { toast } from 'svelte-sonner';
 	import { AppLinks } from '@/utils/common';
-
+	import dummyData from '@/dev/dummyData';
+	import DummyDataSection from '@/dev/dummyDataSection.svelte';
 	let isLoading = false;
 	let simpleError = ''; // could've done it better, but, that should be fine for this project.
 
@@ -48,6 +49,18 @@
 		};
 	}
 
+	const fields = [
+		{ name: 'email', placeholder: 'Email', type: 'email', value: '' },
+		{ name: 'password', placeholder: 'Password', type: 'password', value: '' }
+	];
+
+	function populateRandomData(idx: number) {
+		const randomData = dummyData[idx];
+
+		fields[0].value = randomData.email;
+		fields[1].value = randomData.password;
+	}
+
 	function onSubmit() {
 		// setTimeout(() => {
 		// isLoading = true;
@@ -70,6 +83,7 @@
 				<h1 class="text-2xl font-semibold tracking-tight">Login to your account</h1>
 				<p class="text-muted-foreground text-sm">Enter your email below to login</p>
 			</div>
+			<DummyDataSection {populateRandomData} />
 
 			<div class="">
 				<form method="post" action="" on:submit={onSubmit} use:enhance={enhancedSubmission}>
@@ -78,6 +92,7 @@
 							<Label class="sr-only" for="email">Email</Label>
 							<Input
 								name="email"
+								value={fields[0].value}
 								id="email"
 								placeholder="hello@example.com"
 								type="email"
@@ -89,6 +104,7 @@
 							<Label class="sr-only" for="password">Password</Label>
 							<Input
 								name="password"
+								value={fields[1].value}
 								id="password"
 								placeholder="***********"
 								type="password"

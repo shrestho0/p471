@@ -10,6 +10,8 @@
 	import { toast } from 'svelte-sonner';
 	import { AppLinks } from '@/utils/common';
 	import PreDebug from '@/dev/PreDebug.svelte';
+	import dummyData from '@/dev/dummyData';
+	import DummyDataSection from '@/dev/dummyDataSection.svelte';
 
 	let isLoading = false;
 	let finalErrorMessage = '';
@@ -32,15 +34,16 @@
 	};
 
 	const fields = [
-		{ name: 'email', placeholder: 'Email', type: 'email' },
-		{ name: 'username', placeholder: 'Username', type: 'username' },
-		{ name: 'name', placeholder: 'John Doe', type: 'text' },
-		{ name: 'password', placeholder: 'Password', type: 'password' },
+		{ name: 'email', placeholder: 'Email', type: 'email', value: '' },
+		{ name: 'username', placeholder: 'Username', type: 'username', value: '' },
+		{ name: 'name', placeholder: 'John Doe', type: 'text', value: '' },
+		{ name: 'password', placeholder: 'Password', type: 'password', value: '' },
 		{
 			name: 'passwordConfirm',
 			placeholder: 'Confirm Password',
 			type: 'password',
-			error: fieldErrors.passwordConfirm
+			error: fieldErrors.passwordConfirm,
+			value: ''
 		}
 	];
 
@@ -78,6 +81,16 @@
 		};
 	}
 
+	function populateRandomData(idx: number) {
+		const randomData = dummyData[idx];
+
+		fields[0].value = randomData.email;
+		fields[1].value = randomData.username;
+		fields[2].value = randomData.name;
+		fields[3].value = randomData.password;
+		fields[4].value = randomData.password;
+	}
+
 	function onSubmit() {
 		// setTimeout(() => {
 		// isLoading = true;
@@ -98,9 +111,10 @@
 		<div class="flex flex-col gap-8">
 			<div class="flex flex-col space-y-2 text-center">
 				<h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
-				<p class="text-sm text-muted-foreground">Fill out the form below to create your account</p>
+				<p class="text-muted-foreground text-sm">Fill out the form below to create your account</p>
 			</div>
-
+			<!-- dummy data section -->
+			<DummyDataSection {populateRandomData} />
 			<!-- <PreDebug data={{ fieldErrors }} /> -->
 			<div class="">
 				<form
@@ -130,6 +144,7 @@
 									id={inputF.name}
 									placeholder={inputF.placeholder}
 									type={inputF.type}
+									bind:value={inputF.value}
 									disabled={isLoading}
 									autocomplete="off"
 								/>
@@ -160,13 +175,13 @@
 					</div>
 				</form>
 			</div>
-			<p class="px-8 text-center text-sm text-muted-foreground">
+			<p class="text-muted-foreground px-8 text-center text-sm">
 				By clicking continue, you agree to our{' '}
-				<a href="/terms" class="underline underline-offset-4 hover:text-primary">
+				<a href="/terms" class="hover:text-primary underline underline-offset-4">
 					Terms of Service
 				</a>{' '}
 				and{' '}
-				<a href="/privacy" class="underline underline-offset-4 hover:text-primary">
+				<a href="/privacy" class="hover:text-primary underline underline-offset-4">
 					Privacy Policy
 				</a>
 				.
