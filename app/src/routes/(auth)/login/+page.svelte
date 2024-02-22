@@ -24,7 +24,18 @@
 					break;
 				}
 				case 'redirect': {
-					toast.success(result?.data?.message ?? "You're logged in!");
+					toast.success(result?.data?.message ?? "You're logged in!", {
+						duration: 3000,
+						position: 'top-right'
+					});
+					await applyAction(result);
+					invalidateAll();
+
+					// setTimeout(() => {
+					// 	//push state
+					// 	window.location.href = AppLinks.USER_DASHBOARD;
+					// }, 3000);
+
 					console.log('redirect');
 					break;
 				}
@@ -57,7 +68,7 @@
 		<div class="flex flex-col gap-8">
 			<div class="flex flex-col space-y-2 text-center">
 				<h1 class="text-2xl font-semibold tracking-tight">Login to your account</h1>
-				<p class="text-sm text-muted-foreground">Enter your email below to login</p>
+				<p class="text-muted-foreground text-sm">Enter your email below to login</p>
 			</div>
 
 			<div class="">
@@ -104,13 +115,13 @@
 					</div>
 				</form>
 			</div>
-			<p class="px-8 text-center text-sm text-muted-foreground">
+			<p class="text-muted-foreground px-8 text-center text-sm">
 				By clicking continue, you agree to our{' '}
-				<a href="/terms" class="underline underline-offset-4 hover:text-primary">
+				<a href="/terms" class="hover:text-primary underline underline-offset-4">
 					Terms of Service
 				</a>{' '}
 				and{' '}
-				<a href="/privacy" class="underline underline-offset-4 hover:text-primary">
+				<a href="/privacy" class="hover:text-primary underline underline-offset-4">
 					Privacy Policy
 				</a>
 				.

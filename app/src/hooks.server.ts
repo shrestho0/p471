@@ -1,4 +1,4 @@
-import { PB_HOST } from "$env/static/private";
+import { PB_HOST, PB_SITE_KEY } from "$env/static/private";
 import { setPBSiteKey } from "@/utils/server";
 import type { Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
@@ -14,41 +14,50 @@ import Pocketbase from 'pocketbase';
 
 export const AuthHandler = (async ({ event, resolve }) => {
 
+    if (!PB_HOST || !PB_SITE_KEY) {
+        console.error("PB_HOST || PB_SITE_KEY  is not set. This service is dependent on Pocketbase, thus the keys are required.");
+        process.exit(69);
+    }
+
     // Setting up pb
-    const pb = new Pocketbase(PB_HOST)
-    event.locals.pb = pb; // as pb will be used inside server load functions
+    event.locals.pb = new Pocketbase(PB_HOST)
+    // as pb will be used inside server load functions
 
 
     // Check cookies with pb lib
-    pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+    event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
     try {
 
 
-        if (pb.authStore.isValid) {
+        if (event.locals.pb.authStore.isValid) {
 
-            if (pb.authStore.isAdmin) {
+            if (event.locals.pb.authStore.isAdmin) {
                 event.locals.pb.admins.authRefresh();
                 event.locals.admin = structuredClone(event.locals.pb.authStore.model);
-            } else if (pb.authStore.isAuthRecord) {
-                pb.collection('users').authRefresh();
+            } else if (event.locals.pb.authStore.isAuthRecord) {
+                event.locals.pb.collection('users').authRefresh();
                 event.locals.user = structuredClone(event.locals.pb.authStore.model);
             }
         }
     } catch (_) {
-        event.locals.pb.authStore.clear();
-
+        // console.log("AuthHandler Error", _);
+        event.locals.pb?.authStore && event.locals.pb.authStore.clear();
+        event.locals.admin = null;
+        event.locals.user = null;
     }
+
+
 
     // setting auth cookie in the response
     const response = await resolve(event);
-    response.headers.set('set-cookie', pb.authStore.exportToCookie({
+    response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({
         path: '/',
         httpOnly: true,
         secure: false
     }))
 
-    console.log("AuthHandler Called");
+    console.log("AuthHandler Called", event.url.pathname);
     return response;
 
 }) satisfies Handle;
