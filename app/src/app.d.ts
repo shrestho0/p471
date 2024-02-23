@@ -6,8 +6,8 @@ declare global {
 		interface Locals {
 			pb: import('pocketbase').default;
 			// userType: import("$lib/types").UserType;
-			user: import('pocketbase').User = null;
-			admin: import('pocketbase').Admin = null;
+			user: import('pocketbase').Record | null;
+			admin: import('pocketbase').Admin | null;
 		}
 		// interface PageData {}
 		// interface PageState {}
