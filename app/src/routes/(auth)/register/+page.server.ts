@@ -112,10 +112,41 @@ export const actions: Actions = {
             emailVisibility: true,
         })
 
-        if (!newUser) {
-            return fail(400, { message: "Failed to create user" });
-        }
+        // create user's profile page
+        const newProfilePage = await locals.pb.collection(dbTables.pages).create({
+            title: `${newUser.name}'s Profile Page`,
+            slug: '/',
+            content: "# Welcome to my profile page",
+            status: 'published',
+            user: newUser.id,
+        }).catch((e) => {
+            console.log(e); // DEBUG
+            return null;
+        })
 
+        // Create header and footer
+
+        const newUserHeader = await locals.pb.collection(dbTables.header).create({
+            user: newUser.id,
+            site_title: `${newUser.name}'s mCMS Page`,
+        }).catch((e) => {
+            console.log(e); // DEBUG
+            return null;
+        });
+
+
+        const newUserFooter = await locals.pb.collection(dbTables.footer).create({
+            user: newUser.id,
+            text: `© ${newUser.name} ${new Date().getFullYear()}`
+        }).catch((e) => {   // DEBUG
+            console.log(e);
+            return null;
+        });
+
+
+        if (!newUser || !newProfilePage || !newUserHeader || !newUserFooter) {
+            return fail(400, { message: "Failed to create user. Please ask adminstrator." });
+        }
 
         return redirect(302, AppLinks.USER_LOGIN);
 

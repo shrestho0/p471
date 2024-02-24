@@ -20,4 +20,6 @@ export const ErrorMessages = {
 
 
     DEFAULT_ERROR: "Some error occured!",
+
+    PAGE_NOT_FOUND: "we couldn't find this page.",
 }

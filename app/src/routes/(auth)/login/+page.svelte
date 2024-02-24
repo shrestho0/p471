@@ -110,7 +110,9 @@
 					{/if}
 					<Button type="submit" disabled={isLoading}>
 						{#if isLoading}
-							<CircleDotDashed color="white" class="mr-2 h-4 w-4 animate-spin" />
+							<CircleDotDashed
+								class="mr-2 h-4 w-4 animate-spin stroke-white dark:stroke-stone-950"
+							/>
 						{/if}
 						Sign In
 					</Button>

@@ -3,50 +3,65 @@
 	import type { SiteDataTypes } from '@/types/customizations';
 	import { onDestroy, onMount } from 'svelte';
 	import { ModeWatcher, mode, setMode } from 'mode-watcher';
+	import { page } from '$app/stores';
 
-	export let data: SiteDataTypes;
+	let loading = true;
 	export let tempMode: string;
+	import * as Alert from '$lib/components/ui/alert';
+	import { X } from 'lucide-svelte';
+	import { Button } from '@/components/ui/button';
+
+	// we'll keep dark and light css same
+
+	let hideNotice = false;
 
 	onMount(() => {
-		if ($mode === 'dark') {
-			tempMode = 'dark';
-			setMode('light');
-		}
-	});
-
-	onDestroy(() => {
-		if (tempMode === 'dark') {
-			setMode('dark');
-		}
+		console.log('mounted');
+		loading = false;
 	});
 </script>
 
 <svelte:head>
-	<title>{data?.header?.site_title ? data.header.site_title + '| mCMS' : 'mCMS'}</title>
-
-	{#if data?.stylesheet_url}
-		<link rel="stylesheet" type="text/css" href={data.stylesheet_url} />
-	{/if}
+	<!-- <title>{data?.header?.site_title ? data.header.site_title + '| mCMS' : 'mCMS'}</title> -->
+	<link
+		rel="stylesheet"
+		href="/api/site-style?u={$page.url.pathname?.split('/')[1]}&v={Math.random()}"
+	/>
 </svelte:head>
 
-<slot />
-
-<div class="footer">
-	<pre>
-        (User-Page Group Layout)
-        Pages will be light mode only with base tailwind styles
-    </pre>
-	<PreDebug data={data.header} title="Header" />
-</div>
-
-<h1>H1: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h1>
-<h2>H2: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h2>
-<h3>H3: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h3>
-<h4>H4: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h4>
-<h5>H5: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h5>
-<h6>H6: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, quo.</h6>
-<p>P: Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-
-<div class="footer">
-	<PreDebug data={data.footer} title="Footer" />
+<div class=" bg-white">
+	{#if loading}
+		<div class="flex h-screen items-center justify-center">
+			<div class="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+		</div>
+	{:else if !hideNotice}
+		{#if $page?.data.user}
+			<div class="flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black">
+				<span>You are logged in as {$page.data?.user?.name}</span>
+				<Button
+					class="cursor-pointer"
+					on:click={() => {
+						console.log('clicked');
+						hideNotice = true;
+					}}
+				>
+					<X color="red" class="   " />
+				</Button>
+			</div>
+		{:else if $page?.data.admin}
+			<div class="flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black">
+				<span>You are logged in as {$page.data?.admin?.email}</span>
+				<Button
+					class="cursor-pointer"
+					on:click={() => {
+						console.log('clicked');
+						hideNotice = true;
+					}}
+				>
+					<X color="red" class="   " />
+				</Button>
+			</div>
+		{/if}
+	{/if}
+	<slot />
 </div>
