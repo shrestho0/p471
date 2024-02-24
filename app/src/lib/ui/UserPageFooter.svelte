@@ -4,7 +4,7 @@
 	import Separator from '@/components/ui/separator/separator.svelte';
 
 	export let footerData: SiteFooterType = {
-		text: '(c) 2021 User Page Footer',
+		text: '(c) 2024 User Page Footer',
 		social_json: [
 			{ title: 'Facebook', href: '#', fa_icon: 'facebook' },
 			{ title: 'Twitter', href: '#', fa_icon: 'twitter' }
@@ -12,7 +12,7 @@
 	};
 </script>
 
-<footer class=" ">
+<footer class=" text-black dark:text-black">
 	<div class=" flex flex-col items-center justify-between border p-3 md:flex-row">
 		<div class="left">
 			<p>{footerData.text}</p>
@@ -36,7 +36,7 @@
 		</nav>
 		<div class="w-auto">
 			<div class="flex items-center justify-center gap-3">
-				Powered By <Logo />
+				Powered By <Logo className="text-black dark:text-black" />
 			</div>
 		</div>
 	</div>

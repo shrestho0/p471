@@ -1,6 +1,6 @@
 
 
-interface SinglePage {
+type SinglePage = {
     id: string;
     title: string;
     slug: string;

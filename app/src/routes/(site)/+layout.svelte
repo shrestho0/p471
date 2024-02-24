@@ -6,4 +6,3 @@
 <div class=" mx-auto max-w-screen-xl dark:bg-stone-950">
 	<slot />
 </div>
-<ModeWatcher />

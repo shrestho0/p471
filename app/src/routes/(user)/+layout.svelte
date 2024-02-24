@@ -5,6 +5,9 @@
 	import PageHeaderBlock from '@/ui/PageHeaderBlock.svelte';
 	import PageContentBlock from '@/ui/PageContentBlock.svelte';
 	import { page } from '$app/stores';
+	import Separator from '@/components/ui/separator/separator.svelte';
+	import SidePanel from '@/ui/SidePanel.svelte';
+	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
 	export let data: {
 		user: {
 			name: string;
@@ -30,9 +33,16 @@
 			<div class="flex h-16 items-center justify-center gap-3 border-b border-gray-200">
 				<Logo className="text-black" />
 			</div>
+
+			<SidePanel pages={userPanelPages} {customizationPages} />
 		</aside>
 		<aside class=" w-full bg-gray-50">
-			<PageHeaderBlock user={data?.user} title={sanitizeTitle($page.url.pathname)} />
+			<PageHeaderBlock
+				user={data?.user}
+				title={sanitizeTitle($page.url.pathname)}
+				pages={userPanelPages}
+				{customizationPages}
+			/>
 			<PageContentBlock>
 				<slot />
 			</PageContentBlock>
