@@ -31,7 +31,11 @@
 				}
 				case 'success': {
 					simpleError = '';
-					toast.success(SuccessMessages.PASSWORD_CHANGE_SUCCESS);
+					toast.success(SuccessMessages.PASSWORD_CHANGE_SUCCESS, {
+						duration: 3000,
+						position: 'top-right'
+					});
+					document.location.reload();
 					break;
 				}
 			}
@@ -64,7 +68,7 @@
 <div class="flex max-w-lg flex-col space-y-6 lg:p-8">
 	<div class="flex flex-col gap-8">
 		<div class="">
-			<form method="post" action="" use:enhance={enhancedSubmission}>
+			<form method="post" action="?/changePassword" use:enhance={enhancedSubmission}>
 				<div class="grid gap-2">
 					{#each fields as field}
 						<div class="grid gap-1">
@@ -94,7 +98,7 @@
 					<Button
 						type="submit"
 						variant="outline"
-						class="text-white"
+						class="w-full bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700"
 						disabled={isLoading || btnDisabled}
 					>
 						{#if isLoading}
