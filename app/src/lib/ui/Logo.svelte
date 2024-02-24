@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { AppLinks } from '@/utils/app-links';
 
 	export let mode: 'dark' | 'light' = 'light';
@@ -12,7 +13,7 @@
 </script>
 
 <a
-	href={AppLinks.HOME}
+	href="/"
 	class="{className} relative z-20 flex items-center text-lg font-extrabold tracking-tight"
 >
 	mCMS

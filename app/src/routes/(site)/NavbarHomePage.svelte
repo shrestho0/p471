@@ -6,11 +6,14 @@
 	import { toast } from 'svelte-sonner';
 	import { browser } from '$app/environment';
 	import { fly, slide } from 'svelte/transition';
+	import { page } from '$app/stores';
 
 	let open = true;
 	function toggleMobileMenu() {
 		open = !open;
 	}
+
+	export let showMenuItems = true;
 
 	export const menuitems = [
 		{
@@ -145,7 +148,9 @@
 
 	{#if open}
 		<nav
-			class="flex w-full flex-grow flex-col gap-2 pb-4 transition-all ease-out md:mt-0 md:flex-row md:items-center md:justify-center md:pb-0 {!onMobile &&
+			class="{!showMenuItems
+				? 'hidden'
+				: ''} flex w-full flex-grow flex-col gap-2 pb-4 transition-all ease-out md:mt-0 md:flex-row md:items-center md:justify-center md:pb-0 {!onMobile &&
 			scrollY > 100
 				? 'rounded-xl border border-gray-900 bg-gray-50/80 md:mx-16 lg:mx-32 xl:mx-48 dark:border-gray-100 dark:bg-stone-950/80  '
 				: ''}"
@@ -191,8 +196,14 @@
 			</div>
 			<!-- <Link href="/login" style="outline">Login</Link> -->
 			<!-- <Link href="/register">Register</Link> -->
-			<Button href="/login" variant="default">Login</Button>
-			<Button href="/login" variant="outline">Register</Button>
+			{#if $page?.data.user}
+				<Button href={AppLinks.USER_DASHBOARD} variant="outline">Dashboard</Button>
+			{:else if $page?.data.admin}
+				<Button href={AppLinks.ADMIN_DASHBOARD} variant="outline">Dashboard</Button>
+			{:else}
+				<Button href="/login" variant="default">Login</Button>
+				<Button href="/register" variant="outline">Register</Button>
+			{/if}
 		</div>
 	{/if}
 </div>

@@ -1,24 +1,25 @@
+import dbTables from "@/utils/db-tables";
 import type { PageServerLoad } from "./$types";
-import { error } from '@sveltejs/kit'
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-
-    console.log("From users-pages/[username]/+page.server.ts | Params:", params)
-
-
+    // we are safe here
+    // get header and footer from user
     const { username } = params;
 
-    // TODO: Remove after design
-    if (username === "a") {
-        return;
+    const ownerHeader = await locals.pb.collection(dbTables.header).getFirstListItem(`user.username = "${username}"`).catch((e) => {
+        return null;
+    });
+    const ownerFooter = await locals.pb.collection(dbTables.footer).getFirstListItem(`user.username = "${username}"`).catch((e) => {
+        return null;
+    });
+
+    if (ownerHeader && ownerFooter) {
+        return {
+            siteHeader: structuredClone(ownerHeader),
+            siteFooter: structuredClone(ownerFooter)
+        }
     }
 
-    // Check for user in database
-    const someUser = null;
-
-    if (!someUser) {
-        return error(404, "Page Not Found")
-    }
 
 
 };

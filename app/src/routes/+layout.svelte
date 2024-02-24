@@ -2,6 +2,7 @@
 	import { navigating } from '$app/stores';
 	import '$lib/ui/app.pcss';
 	import { Button } from '@/components/ui/button';
+	import { onMount } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
@@ -14,6 +15,8 @@
 	});
 
 	let isVisible = false;
+
+	let loading = true;
 
 	function increase() {
 		if ($p >= 0 && $p < 0.2) {
@@ -52,12 +55,23 @@
 			}, 100);
 		}
 	}
+
+	onMount(() => {
+		loading = false;
+	});
 </script>
 
 {#if $p > 0 && $p < 1 && isVisible}
 	<progress value={$p} transition:fade={{ duration: 300 }} />
 {/if}
-<slot />
+
+{#if loading}
+	<div class="flex h-screen items-center justify-center">
+		<div class="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+	</div>
+{:else}
+	<slot />
+{/if}
 
 <Toaster />
 
