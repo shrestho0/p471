@@ -41,6 +41,36 @@
 	];
 
 	$: nav_json_internal = JSON.stringify(navLinks);
+
+	const searchObj = {
+		q: '',
+		results: [],
+		status: 'idle',
+		message: ''
+	} as {
+		q: string;
+		results: SingleNavItem[];
+		status: 'idle' | 'loading' | 'success' | 'error';
+		message?: string;
+	};
+
+	async function searchPages() {
+		searchObj.status = 'loading';
+		const endpoint = `/api/search/?t=page&q=${searchObj.q}`;
+		const res = await fetch(endpoint);
+		const data = await res.json();
+		if (data?.success === true) {
+			searchObj.status = 'success';
+			searchObj.results = data?.results;
+		} else if (data?.success === false) {
+			searchObj.status = 'error';
+			searchObj.message = data?.message;
+		}
+	}
+
+	/**
+	 * User Searches for links
+	 */
 </script>
 
 <UserPanelItemWrapper title="Site Logo">
@@ -72,6 +102,58 @@
 
 <UserPanelItemWrapper title="Navbar Links">
 	<div class="sec flex flex-col gap-3 py-3">
+		<div class="w-full">
+			<h2>Search for pages and add links:</h2>
+			<form class="flex gap-3" on:submit|preventDefault>
+				<Input bind:value={searchObj.q} type="text" placeholder="Search for pages" minlength={1} />
+				<Button
+					type="submit"
+					on:click={searchPages}
+					disabled={searchObj.q?.trim()?.length < 1}
+					class="bg-black text-white">Search</Button
+				>
+			</form>
+
+			{#if searchObj.status === 'loading'}
+				<!-- Loading Spinner-->
+				<div class="flex w-full items-center justify-center p-4">
+					<div class="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-black"></div>
+				</div>
+			{:else if searchObj.status === 'success'}
+				{#if searchObj.results.length < 1}
+					<p class="text-black dark:text-black">No results found</p>
+				{:else}
+					<table class="table table-fixed items-center gap-2">
+						<tr>
+							<th>Page Title</th>
+							<th colspan="2">Actions</th>
+						</tr>
+						{#each searchObj.results as result}
+							<tr class="m-3 py-3">
+								<td>
+									<span class="text-sm text-black dark:text-black">{result.title}</span>
+								</td>
+								<td>
+									<Button variant="outline" class="" href={result.href} target="_blank"
+										>Preview</Button
+									>
+								</td>
+								<td>
+									<Button
+										on:click={() => {
+											navLinks = [...navLinks, result];
+										}}
+										class="bg-black text-white">Add</Button
+									>
+								</td>
+							</tr>
+						{/each}
+					</table>
+				{/if}
+			{:else if searchObj.status === 'error'}
+				<p class="text-red-500">Error fetching pages</p>
+			{/if}
+		</div>
 		{#each navLinks as link, idx}
 			<span class="text-sm text-black dark:text-black">
 				Link #{idx + 1}
