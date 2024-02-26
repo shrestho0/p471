@@ -8,6 +8,7 @@
 	import Separator from '@/components/ui/separator/separator.svelte';
 	import SidePanel from '@/ui/SidePanel.svelte';
 	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
+	import { toTitleCase } from '@/utils/common';
 	export let data: {
 		user: {
 			name: string;
@@ -23,9 +24,18 @@
 		// _ to none
 		title = title.replace(/_/g, '');
 
-		return title;
+		title = title.trim();
+		// Capitalize first letter
+		return toTitleCase(title);
 	}
 </script>
+
+<svelte:head>
+	<title
+		>{sanitizeTitle($page.url.pathname?.split('/')[1])}
+		{$page.url.pathname?.split('/')[1] ? ' | mCMS' : 'mCMS'}</title
+	>
+</svelte:head>
 
 <div class="h-screen w-full">
 	<div class="flex h-screen w-full overflow-y-hidden">

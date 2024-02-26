@@ -75,7 +75,6 @@
 {/if}
 
 <Toaster />
-<ModeWatcher defaultMode="dark" />
 
 <style>
 	progress {

@@ -1,3 +1,4 @@
+import type { SinglePage } from '@/types/pages-and-stuff';
 import { json } from '@sveltejs/kit';
 
 

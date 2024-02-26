@@ -10,6 +10,8 @@
 	import { page } from '$app/stores';
 	import { fly, slide } from 'svelte/transition';
 	import SidePanel from './SidePanel.svelte';
+	import { Alert } from '@/components/ui/alert';
+	import type { PageStatus } from '@/types/pages-and-stuff';
 
 	export let user: {
 		email: string;
@@ -18,6 +20,7 @@
 		username?: string;
 	};
 	export let title = '';
+	export let pageStatus: PageStatus | null = null;
 
 	let regularUser = false;
 
@@ -38,7 +41,7 @@
 </script>
 
 <div class="header h-16 border-b border-gray-200 bg-white">
-	<div class="flex h-full items-center justify-between px-8">
+	<div class="flex h-full items-center justify-between px-3 md:px-8">
 		<div class="flex items-center justify-center gap-2">
 			<div>
 				<div class="flex items-center justify-center gap-2">
@@ -75,13 +78,24 @@
 					</button>
 				</div>
 			</div>
-			<h1 class="dark: text-2xl font-semibold text-black">{title}</h1>
+			{#if pageStatus == 'banned'}
+				<Alert variant="destructive" class="  ">
+					Status: <span class=" font-semibold">Banned</span>
+				</Alert>
+			{:else if pageStatus == null}
+				<h1 class=" text-md break-words text-black md:text-2xl">{@html title}</h1>
+			{:else}
+				<Alert variant="default" class="  ">
+					<span class=" ">{@html title}</span>
+				</Alert>
+			{/if}
 		</div>
 
 		<slot />
 		<div class="flex h-full items-center justify-between gap-3 px-8">
-			<LightSwitch />
-			<Separator class="mx-1 hidden h-6 md:block" orientation="vertical" />
+			{#if !pageStatus}
+				<Separator class="mx-1 hidden h-6 md:block" orientation="vertical" />
+			{/if}
 			<div
 				class="greet hidden flex-col items-center
 			 justify-center p-1 text-sm text-black md:flex"
@@ -139,6 +153,7 @@
 		</div>
 	</div>
 </div>
+
 {#if open}
 	<div class="border bg-white" transition:slide>
 		<SidePanel {pages} {customizationPages} on:click={toggleMobileMenu} />
