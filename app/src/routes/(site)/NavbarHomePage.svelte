@@ -197,7 +197,9 @@
 			<!-- <Link href="/login" style="outline">Login</Link> -->
 			<!-- <Link href="/register">Register</Link> -->
 			{#if $page?.data.user}
-				<Button href={AppLinks.USER_DASHBOARD} variant="outline">Dashboard</Button>
+				<Button data-sveltekit-reload href={AppLinks.USER_DASHBOARD} variant="outline"
+					>Dashboard</Button
+				>
 			{:else if $page?.data.admin}
 				<Button href={AppLinks.ADMIN_DASHBOARD} variant="outline">Dashboard</Button>
 			{:else}
