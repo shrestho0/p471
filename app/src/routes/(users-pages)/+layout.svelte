@@ -29,39 +29,41 @@
 	/>
 </svelte:head>
 
-<div class=" bg-white">
-	{#if loading}
-		<div class="flex h-screen items-center justify-center">
-			<div class="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+<!-- {#if loading}
+	<div class="flex h-[80%] items-center justify-center bg-white dark:bg-white">
+		<div class="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+	</div> -->
+<!-- 
+{#if !hideNotice}
+	{#if $page?.data.user}
+		<div
+			class="absolute flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black"
+		>
+			<span>You are logged in as {$page.data?.user?.name}</span>
+			<Button
+				class="cursor-pointer"
+				on:click={() => {
+					console.log('clicked');
+					hideNotice = true;
+				}}
+			>
+				<X color="red" class="   " />
+			</Button>
 		</div>
-	{:else if !hideNotice}
-		{#if $page?.data.user}
-			<div class="flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black">
-				<span>You are logged in as {$page.data?.user?.name}</span>
-				<Button
-					class="cursor-pointer"
-					on:click={() => {
-						console.log('clicked');
-						hideNotice = true;
-					}}
-				>
-					<X color="red" class="   " />
-				</Button>
-			</div>
-		{:else if $page?.data.admin}
-			<div class="flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black">
-				<span>You are logged in as {$page.data?.admin?.email}</span>
-				<Button
-					class="cursor-pointer"
-					on:click={() => {
-						console.log('clicked');
-						hideNotice = true;
-					}}
-				>
-					<X color="red" class="   " />
-				</Button>
-			</div>
-		{/if}
+	{:else if $page?.data.admin}
+		<div class="flex items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black">
+			<span>You are logged in as {$page.data?.admin?.email}</span>
+			<Button
+				class="cursor-pointer"
+				on:click={() => {
+					console.log('clicked');
+					hideNotice = true;
+				}}
+			>
+				<X color="red" class="   " />
+			</Button>
+		</div>
 	{/if}
-	<slot />
-</div>
+{/if} -->
+<!-- {/if} -->
+<slot />

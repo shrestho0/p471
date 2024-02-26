@@ -30,14 +30,21 @@
 		referrerpolicy="no-referrer"
 	/>
 </svelte:head>
-{#if !loading}
-	<UserPageHeader headerData={data?.siteHeader} />
-	<main class="container p-8 md:p-16">
-		<Markdown source={data?.pageContent.content} />
-	</main>
-	<UserPageFooter footerData={data?.siteFooter} />
-{:else}
-	<div class="flex h-screen items-center justify-center">
-		<div class="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
-	</div>
-{/if}
+<div class=" bg-white dark:bg-white">
+	{#if !loading}
+		<div class="flex h-screen flex-col">
+			<UserPageHeader headerData={data?.siteHeader} />
+			<main class="flex-1 p-8 md:p-16">
+				<!-- <div class="page-title">
+					{data?.pageContent?.title}
+				</div> -->
+				<Markdown source={data?.pageContent.content} />
+			</main>
+			<UserPageFooter footerData={data?.siteFooter} />
+		</div>
+	{:else}
+		<div class="  flex h-screen items-center justify-center bg-white dark:bg-white">
+			<div class="h-16 w-16 animate-spin rounded-full border-b-2 border-t-2 border-gray-900"></div>
+		</div>
+	{/if}
+</div>

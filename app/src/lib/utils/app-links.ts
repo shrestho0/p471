@@ -11,3 +11,11 @@ export const AppLinks = {
     USER_REGISTER: "/register",
     USER_DASHBOARD: "/dashboard",
 }
+
+
+export const InternalApiEndpoints = {
+    NEW_PAGE: "/api/pages/new",
+    EDIT_PAGE: "/api/pages/edit",
+    SEARCH_PAGE: "/api/pages/search",
+    SITE_STYLESHEET: "/api/site-style",
+}

@@ -12,7 +12,7 @@
 </script>
 
 <header
-	class="flex flex-col items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black"
+	class="flex flex-col items-center justify-center gap-3 bg-black p-4 text-gray-100 dark:bg-black dark:text-gray-100"
 >
 	{#if headerData.logo_url}
 		<img src={headerData.logo_url} alt={headerData.site_title} />

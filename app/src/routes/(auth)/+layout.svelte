@@ -24,4 +24,3 @@
 	</div>
 	<slot />
 </div>
-<ModeWatcher />
