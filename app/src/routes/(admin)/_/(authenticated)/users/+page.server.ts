@@ -1,7 +1,7 @@
 import type { SinglePage } from "@/types/pages-and-stuff";
 import type { PageServerLoad } from "./$types";
-import { dummyPages } from "@/dev/dummyPages";
-
+import dummyData from "@/dev/dummyData";
+import type { User } from "@/types/users";
 export const load: PageServerLoad = async ({ locals, url }) => {
     let page = Number.parseInt(url.searchParams.get('page') || '1')
     let status = url.searchParams.get('status')
@@ -12,13 +12,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     console.log('page', page, 'status', status, 'limit', limit, 'sort', sort)
 
 
-    let filteredPages: SinglePage[] = [];
+    let filteredPages: User[] = [];
     if (q) {
-        filteredPages = dummyPages.filter((page: SinglePage) => {
-            return page.title.includes(q) || page.content.includes(q)
+        filteredPages = dummyData.filter((page: User) => {
+            return page.id.includes(q) || page.name.includes(q) || page.email.includes(q)
         })
     }
-    filteredPages = dummyPages
+    filteredPages = dummyData
 
 
 

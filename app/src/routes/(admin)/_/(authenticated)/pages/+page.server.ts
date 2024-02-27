@@ -8,6 +8,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     let limit = Number.parseInt(url.searchParams.get('limit') || '5')
     let sort = url.searchParams.get('sort') || '-created'
     let q = url.searchParams.get('q') || ''
+    let qu = url.searchParams.get('uq') || ''
 
     console.log('page', page, 'status', status, 'limit', limit, 'sort', sort)
 
