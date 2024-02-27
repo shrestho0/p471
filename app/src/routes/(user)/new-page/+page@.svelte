@@ -12,11 +12,7 @@
 	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	export let data: {
-		user: {
-			name: string;
-			email: string;
-			username: string;
-		};
+		user: any;
 	};
 	import { Button } from '@/components/ui/button';
 	import Alert from '@/components/ui/alert/alert.svelte';
@@ -29,6 +25,7 @@
 	import { toast } from 'svelte-sonner';
 	import { AppLinks, InternalApiEndpoints } from '@/utils/app-links';
 	import type { ResponseNewOrUpdatePage } from '@/types/load-data';
+	import macros from '@/utils/macros';
 
 	let pageData = {
 		title: {
@@ -62,12 +59,6 @@
 	// 	// Check for errors and set the error message
 
 	// }
-
-	let availableMacros = [
-		{ name: 'Name', value: data?.user?.name, macro: '{{name}}' },
-		{ name: 'Username', value: data?.user?.username, macro: '{{username}}' },
-		{ name: 'Email', value: data?.user?.email, macro: '{{email}}' }
-	];
 
 	$: buttonsDisabled =
 		!pageData.title.value || !pageData.slug.value || !pageData.content.value?.length;
@@ -241,13 +232,14 @@
 						</div>
 					</div>
 					<!-- Available macros -->
+					<!-- Available macros -->
 					<div class="mt-4">
 						<label for="macros" class="text-md block font-normal text-gray-700">
-							Available Macros (can be used inside the content):
+							Available Macros:
 						</label>
 						<div class="mt-1 text-sm text-gray-700">
 							<div class="">
-								{#each availableMacros as macroObj}
+								{#each macros as macroObj}
 									<div class="m-1 flex gap-2">
 										<Button
 											title="Copy to clipboard"
@@ -259,7 +251,7 @@
 										>
 											{macroObj.macro}
 											<Minus />
-											{macroObj.name} ({macroObj.value})
+											{macroObj.name} ({data?.user[macroObj.userKey]})
 										</Button>
 									</div>
 								{/each}

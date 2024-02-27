@@ -22,6 +22,7 @@ export type SingleSocialItem = {
 }
 
 export type SiteHeaderType = {
+    id: string,
     site_title: string,
     logo_url: string,
     nav_json: SingleNavItem[]

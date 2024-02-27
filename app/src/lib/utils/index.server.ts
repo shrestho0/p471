@@ -2,6 +2,7 @@ import type { SiteStyle } from "@/types/customizations";
 
 
 import { PB_SITE_KEY } from '$env/static/private';
+import { fail } from "@sveltejs/kit";
 
 
 export async function setPBSiteKey(pb: import('pocketbase').default) {
@@ -37,4 +38,17 @@ export function jsonToCSS(json: SiteStyle) {
     }
 
     return css;
+}
+
+
+
+const UPDATE_RATE_LIMIT_TIME = 1000 * 60 * 5; // 5 minutes
+export function rateLimitUpdate(dateString: string) {
+    const date = new Date(dateString);
+    const now = new Date();
+    if (now.getTime() - date.getTime() > UPDATE_RATE_LIMIT_TIME) {
+
+        return true;
+    }
+    return fail(429, { message: "Rate limit exceeded" });
 }

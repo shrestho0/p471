@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Skeleton } from '$lib/components/ui/skeleton';
 	import Button from '@/components/ui/button/button.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -9,7 +8,9 @@
 	import { X } from 'lucide-svelte';
 
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
-	import type { SingleNavItem } from '@/types/customizations';
+	import type { SingleNavItem, SiteHeaderType } from '@/types/customizations';
+	import type { User } from '@/types/users';
+	import { toast } from 'svelte-sonner';
 
 	function enhancedLogoRemoval() {
 		return async ({ result }: { result: ActionResult }) => {
@@ -30,6 +31,32 @@
 	function enhancedNavLinksChange() {
 		return async ({ result }: { result: ActionResult }) => {
 			// Do Something
+			await applyAction(result);
+			invalidateAll();
+		};
+	}
+
+	function enhanceSubmission() {
+		return async ({ result }: { result: ActionResult }) => {
+			// Do Something
+			switch (result.type) {
+				case 'success':
+					toast.success(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					break;
+				case 'failure':
+					toast.error(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					break;
+				default:
+					break;
+			}
 			await applyAction(result);
 			invalidateAll();
 		};
@@ -71,7 +98,27 @@
 	/**
 	 * User Searches for links
 	 */
+
+	export let data: { siteHeader: SiteHeaderType; user: User };
+	const siteHeader = data?.siteHeader as SiteHeaderType;
 </script>
+
+<UserPanelItemWrapper title="Site Logo">
+	<div class="sec flex flex-col gap-3 py-3">
+		<div class="user-logo">
+			<form
+				action="?/changeTitle"
+				class="flex items-center gap-2 text-black dark:text-black"
+				method="post"
+				use:enhance={enhanceSubmission}
+			>
+				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+				<Input name="site_title" type="text" bind:value={siteHeader.site_title} />
+				<Button type="submit" class="bg-black text-white">Update Title</Button>
+			</form>
+		</div>
+	</div>
+</UserPanelItemWrapper>
 
 <UserPanelItemWrapper title="Site Logo">
 	<div class="sec flex flex-col gap-3 py-3">
