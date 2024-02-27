@@ -28,7 +28,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { AppLinks, InternalApiEndpoints } from '@/utils/app-links';
-	import type { ResponseNewPage } from '@/types/load-data';
+	import type { ResponseNewOrUpdatePage } from '@/types/load-data';
 
 	let pageData = {
 		title: {
@@ -80,9 +80,11 @@
 
 	function getSanitizeData() {
 		let content_sanitized = pageData.content.value.trim();
-		availableMacros.forEach((macroObj) => {
-			content_sanitized = content_sanitized.replaceAll(macroObj.macro, macroObj.value);
-		});
+
+		// we'll change the macros on page load on view
+		// availableMacros.forEach((macroObj) => {
+		// 	content_sanitized = content_sanitized.replaceAll(macroObj.macro, macroObj.value);
+		// });
 
 		return {
 			title: pageData.title.value.trim(),
@@ -104,7 +106,7 @@
 				status
 			})
 		});
-		const resJson: ResponseNewPage = await res.json();
+		const resJson: ResponseNewOrUpdatePage = await res.json();
 
 		if (resJson?.success) {
 			toast.success(resJson?.message, {

@@ -1,21 +1,15 @@
-import type { PageStatus } from "./pages-and-stuff";
+import type { PageStatus, SinglePage } from "./pages-and-stuff";
 
 export type EditPageLoadData = {
     pageExists: boolean;
     message: string;
-    page: {
-        id: string;
-        title: string;
-        slug: string;
-        content: string;
-        user: string;
-        status: PageStatus
-    };
+    page: SinglePage
 }
 
 export type NewOrEditPageData = {
     status: PageStatus;
     pageId: string;
+    updating?: boolean;
     title: {
         value: string;
         error: string;
@@ -37,11 +31,11 @@ export type RequestNewPage = {
     status: PageStatus;
 }
 
-export type ResponseNewPage = {
+export type ResponseNewOrUpdatePage = {
     success: boolean;
-    redirect_to: string;
+    redirect_to?: string;
     message: string;
-    errors?: {
+    errors: {
         title: string;
         slug: string;
         content: string;

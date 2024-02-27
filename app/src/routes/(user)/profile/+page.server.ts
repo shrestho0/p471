@@ -3,6 +3,7 @@ import type { PageServerLoad } from "./$types";
 import { AppLinks } from "@/utils/app-links";
 import type { EditPageLoadData } from "@/types/load-data";
 import type { SinglePage } from "@/types/pages-and-stuff";
+import dbTables from "@/utils/db-tables";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
     if (!locals?.user) {
@@ -15,16 +16,19 @@ export const load: PageServerLoad = async ({ locals, params }) => {
         page: {}
     } as EditPageLoadData;
 
-    const profilePage = {
-        id: "some-id",
-        title: "Profile",
-        slug: "profile",
-        content: "This is the profile page"
-    } as SinglePage;
+    // Find user's profile page
+    let profilePage = await locals.pb.collection(dbTables.pages).getFirstListItem(`slug = "/" && user = "${locals.user.id}"`).catch((err) => {
+        console.log("Profile page could not be fetched");
+        return null;
+    });
 
-    resObj.page = profilePage;
+    if (!profilePage) {
+        console.log("User's profile page doesn't exist ")
+        // create profile page
+    }
+
     resObj.pageExists = true;
-
+    resObj.page = structuredClone(profilePage) as unknown as SinglePage;
 
     return resObj
 

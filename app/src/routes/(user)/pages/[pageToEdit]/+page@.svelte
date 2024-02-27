@@ -1,39 +1,38 @@
 <script lang="ts">
-	import LightSwitch from '@/ui/LightSwitch.svelte';
 	import Logo from '@/ui/Logo.svelte';
 	import { Input } from '@/components/ui/input';
 	import { Textarea } from '@/components/ui/textarea';
-	import { ModeWatcher } from 'mode-watcher';
 	import PageHeaderBlock from '@/ui/PageHeaderBlock.svelte';
 	import PageContentBlock from '@/ui/PageContentBlock.svelte';
-	import { page } from '$app/stores';
-	import Separator from '@/components/ui/separator/separator.svelte';
 	import SidePanel from '@/ui/SidePanel.svelte';
 	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
-	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
+
+	import { Button } from '@/components/ui/button';
+	import Alert from '@/components/ui/alert/alert.svelte';
+	import { slide } from 'svelte/transition';
+	import { CircleDashed, ExternalLink, Minus } from 'lucide-svelte';
+	import { copyToClipboard, toTitleCase } from '@/utils/common';
+	import { toast } from 'svelte-sonner';
+	import { onMount } from 'svelte';
+	import type { NewOrEditPageData, ResponseNewOrUpdatePage } from '@/types/load-data';
+	import { InternalApiEndpoints } from '@/utils/app-links';
+	import type { SinglePage } from '@/types/pages-and-stuff';
+	import { invalidateAll } from '$app/navigation';
+	import { navigating } from '$app/stores';
+
 	export let data: {
 		user: {
 			name: string;
 			email: string;
 			username: string;
 		};
-	} & EditPageLoadData;
-	import { Button } from '@/components/ui/button';
-	import Alert from '@/components/ui/alert/alert.svelte';
-	import { slide } from 'svelte/transition';
-	import { AlertTriangle, CircleDashed, ExternalLink, Minus } from 'lucide-svelte';
-	import { copyToClipboard, toTitleCase } from '@/utils/common';
-	import { applyAction } from '$app/forms';
-	import type { ActionResult } from '@sveltejs/kit';
-	import { invalidateAll } from '$app/navigation';
-	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
-	import type { EditPageLoadData, NewOrEditPageData } from '@/types/load-data';
-	import { Description } from '@/components/ui/alert';
-	import { InternalApiEndpoints } from '@/utils/app-links';
-
+		page: SinglePage;
+		success: boolean;
+		message?: string;
+	};
 	let pageData: NewOrEditPageData = {
 		pageId: '',
+		updating: false,
 		status: 'draft',
 
 		title: {
@@ -61,7 +60,12 @@
 		{ name: 'Email', value: data?.user?.email, macro: '{{email}}' }
 	];
 
-	$: buttonsDisabled = !pageData.title.value || !pageData.slug.value || !pageData.content.value;
+	// $: buttonsDisabled = !pageData.title.value || !pageData.slug.value || !pageData.content.value;
+	$: buttonsDisabled = !(
+		pageData.title.value != data.page.title ||
+		pageData.slug.value != data.page.slug ||
+		pageData.content.value != data.page.content
+	);
 
 	let loadingButtonType: 'draft' | 'published' | '' = '';
 
@@ -72,56 +76,54 @@
 	function getSanitizeData() {
 		return {
 			id: pageData.pageId,
-			title: pageData.title.value,
-			slug: pageData.slug.value,
-			content: pageData.content.value
+			title: pageData.title.value.trim(),
+			slug: pageData.slug.value.trim(),
+			content: pageData.content.value.trim()
 		};
 	}
 
 	async function handleSubmissionClick(status: 'draft' | 'published') {
-		const data = getSanitizeData();
+		loadingButtonType = status;
+
+		const dataX = getSanitizeData();
 		const res = await fetch(InternalApiEndpoints.EDIT_PAGE + `?pageId=${pageData.pageId}`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				...data,
-				status
+				...dataX,
+				status,
+				oldSlug: data.page.slug
 			})
 		});
-		const resJson: {
-			success: boolean;
-			redirect_to: string;
-			message: string;
-			errors?: {
-				title: string;
-				slug: string;
-				content: string;
-			};
-		} = await res.json();
+		const resJson: ResponseNewOrUpdatePage = await res.json();
+
+		console.log('resJson', resJson);
+		invalidateAll();
 
 		if (resJson?.success) {
 			toast.success(resJson?.message, {
 				position: 'top-center',
-				class: 'my-16'
+				class: 'my-8'
 			});
-			// Redirect to the page
-			window.location.href = resJson?.redirect_to;
+			// Toast should be enough
 		} else {
 			// Show the error
-			toast.error(resJson?.message, {
-				position: 'top-center',
-				class: 'mt-8'
-			});
+			// toast.error(resJson?.message, {
+			// 	position: 'top-center',
+			// 	class: 'mt-8'
+			// });
 			pageData.title.error = resJson?.errors?.title as string;
 			pageData.slug.error = resJson?.errors?.slug as string;
 			pageData.content.error = resJson?.errors?.content as string;
 		}
+
+		loadingButtonType = '';
 	}
 
 	onMount(() => {
-		if (data?.pageExists && data?.page) {
+		if (data?.success && data?.page) {
 			pageData.pageId = data.page.id;
 			pageData.title.value = data.page.title;
 			pageData.slug.value = data.page.slug;
@@ -155,7 +157,11 @@
 					{#if pageData.status == 'banned'}
 						<!-- Simply No Actions -->
 					{:else}
-						<Button variant="ghost" href={'/' + data?.user?.username + '/' + data?.page?.slug}>
+						<Button
+							variant="ghost"
+							target="_blank"
+							href={'/' + data?.user?.username + '/' + data?.page?.slug}
+						>
 							<ExternalLink />
 						</Button>
 
@@ -186,7 +192,7 @@
 			<!-- <UserPanelItemWrapper> -->
 			<!-- Page Title Input-->
 			<PageContentBlock>
-				{#if data.pageExists}
+				{#if data.success}
 					<div class=" m-2 rounded-lg bg-white px-8 py-4 shadow-md md:m-4">
 						<form method="post" on:submit|preventDefault class="mt-3">
 							<label for="title" class="text-md block font-normal text-gray-700"> Title </label>
@@ -197,7 +203,7 @@
 									name="title"
 									id="title"
 									required={true}
-									disabled={Boolean(pageData.title.error) || pageData.status === 'banned'}
+									disabled={pageData.status === 'banned' || Boolean(loadingButtonType)}
 									placeholder="Enter the title of the page"
 								/>
 
@@ -217,7 +223,7 @@
 									type="text"
 									name="slug"
 									id="slug"
-									disabled={Boolean(pageData.slug.error) || pageData.status === 'banned'}
+									disabled={pageData.status === 'banned' || Boolean(loadingButtonType)}
 									bind:value={pageData.slug.value}
 									placeholder="Enter the slug of the page"
 								/>
@@ -237,7 +243,7 @@
 									id="content"
 									rows={15}
 									required={true}
-									disabled={Boolean(pageData.content.error) || pageData.status === 'banned'}
+									disabled={pageData.status === 'banned' || Boolean(loadingButtonType)}
 									bind:value={pageData.content.value}
 									placeholder="Enter the content of the page"
 								></Textarea>
@@ -278,7 +284,7 @@
 					</div>
 				{:else}
 					<Alert>
-						<p>Page not found</p>
+						<p>{data?.message ? data.message : 'Page not found'}</p>
 					</Alert>
 				{/if}
 			</PageContentBlock>

@@ -3,13 +3,14 @@ import type { Actions, PageServerLoad } from "./$types";
 import { dummyPages } from "@/dev/dummyPages";
 import dbTables from "@/utils/db-tables";
 import { fail } from "@sveltejs/kit";
+import type { Record } from "pocketbase";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
     let page = Number.parseInt(url.searchParams.get('page') || '1')
     let status = url.searchParams.get('status')
     let limit = Number.parseInt(url.searchParams.get('limit') || '5')
     let sort = url.searchParams.get('sort') || '-created'
-    let q = url.searchParams.get('q') || ''
+    let q = url.searchParams.get('q')?.trim() || ''
 
 
 
@@ -17,22 +18,37 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     let filter = '';
     if (q) {
         q = q.toLowerCase()
-        filter = `title~${q} || content~${q} || slug~${q} `
+        filter = `title~"${q}" || content~"${q}" || slug~"${q}" `
     }
-    if (status && status !== 'all') {
-        filter += `&& status = ${status}`
+
+
+    if (status && status != 'all') {
+        filter += `${filter ? '&&' : ''} status = "${status}"`
     }
+
+    if (filter) {
+        filter += ' && slug != "/"'
+    } else {
+        filter == 'slug != "/"'
+    }
+
+    console.log('filter', filter)
 
     const pages = await locals.pb.collection(dbTables.pages).getList(page, limit, {
         filter: filter,
         sort: sort
     }).catch((error) => {
-        console.error("Error while getting pages", error)
-        null
-    });
+        console.error("Error while getting pages", error);
+        null;
+    }) as unknown as Record;
 
 
-    console.log('pages', pages)
+    // console.log('pages', pages)
+
+    // Filtering out / page
+    pages.items = pages.items.filter((p: SinglePage) => p.slug != "/")
+    console.log()
+
 
     return structuredClone(pages)
 
