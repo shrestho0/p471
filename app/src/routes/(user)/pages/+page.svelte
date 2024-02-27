@@ -7,7 +7,15 @@
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import type { SinglePage } from '@/types/pages-and-stuff';
-	import { ArrowRight } from 'lucide-svelte';
+	import { ArrowRight, CircleDotDashed } from 'lucide-svelte';
+	import type { User } from '@/types/users';
+	import { beautiulDateTime } from '@/utils/common';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog';
+	import type { ActionResult } from '@sveltejs/kit';
+	import { applyAction, enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
+	import { toast } from 'svelte-sonner';
+	import { ErrorMessages } from '@/utils/messages';
 
 	export let data: {
 		now: Date;
@@ -15,7 +23,44 @@
 		totalPages: number;
 		page: number;
 		items: SinglePage[];
+		user: User;
 	};
+
+	let deleteDrawerOpen = false;
+	let deletingPage = false;
+	let selectedForDeleteItem: SinglePage | null = null;
+
+	function enhancedPageDelete() {
+		return async ({ result }: { result: ActionResult }) => {
+			deletingPage = true;
+			// Do SOmething
+
+			switch (result.type) {
+				case 'success':
+					toast.success(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-4'
+					});
+
+					await applyAction(result);
+					invalidateAll();
+					break;
+				case 'failure':
+					toast.error(result?.data?.message || ErrorMessages.DEFAULT_ERROR, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-6'
+					});
+					break;
+				default:
+					break;
+			}
+
+			deletingPage = false;
+			deleteDrawerOpen = false;
+		};
+	}
 </script>
 
 <UserPanelItemWrapper>
@@ -76,18 +121,19 @@
 		</form>
 	</div>
 </UserPanelItemWrapper>
-
 <UserPanelItemWrapper>
 	<!-- Data Table -->
 
-	<Table.Root>
+	<Table.Root class=" w-full overflow-x-scroll">
 		<!-- <Table.Caption>A list of your recent invoices.</Table.Caption> -->
 		<Table.Header>
 			<Table.Row>
 				<Table.Head class="w-[200px]">Title</Table.Head>
 				<Table.Head class="w-[100px]">Slug</Table.Head>
 				<Table.Head>Status</Table.Head>
+				<Table.Head>Created</Table.Head>
 				<Table.Head>Last Updated</Table.Head>
+
 				<Table.Head class="text-right">Actions</Table.Head>
 			</Table.Row>
 		</Table.Header>
@@ -98,11 +144,33 @@
 						<Table.Cell class="font-medium">{item.title}</Table.Cell>
 						<Table.Cell>{item.slug}</Table.Cell>
 						<Table.Cell>{item.status}</Table.Cell>
-						<Table.Cell>{item?.updated} [DATE]</Table.Cell>
+						<Table.Cell>{beautiulDateTime(item.created)}</Table.Cell>
+
+						<Table.Cell>{beautiulDateTime(item.updated)}</Table.Cell>
 						<Table.Cell class="flex justify-end gap-2 ">
-							<Button variant="outline" size="sm">View</Button>
-							<Button variant="default" size="sm">Edit</Button>
-							<Button variant="outline" class=" bg-indigo-400 text-white " size="sm">Delete</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								data-sveltekit-reload
+								target="_blank"
+								href={'/' + data.user?.username + '/' + item.slug}>View</Button
+							>
+
+							<Button
+								variant="default"
+								size="sm"
+								data-sveltekit-reload
+								href={'/pages' + '/' + item.id}>Edit</Button
+							>
+							<Button
+								variant="outline"
+								class=" bg-indigo-400 text-white "
+								on:click={() => {
+									selectedForDeleteItem = item;
+									deleteDrawerOpen = !deleteDrawerOpen;
+								}}
+								size="sm">Delete</Button
+							>
 						</Table.Cell>
 					</Table.Row>
 				{/each}
@@ -115,7 +183,52 @@
 	</Table.Root>
 </UserPanelItemWrapper>
 
-<PreDebug {data} />
+<AlertDialog.Root bind:open={deleteDrawerOpen}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>Are you sure to delete this page?</AlertDialog.Title>
+			<AlertDialog.Description class="font-sm">
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="ptitle" class="text-right">Page Title:</Label>
+					<Label id="ptitle" class="col-span-3">{selectedForDeleteItem?.title}</Label>
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="pslug" class="text-right">Page Slug:</Label>
+					<Label id="pslug" class="col-span-3 disabled:text-black"
+						>{selectedForDeleteItem?.slug}</Label
+					>
+				</div>
+				<div class="grid grid-cols-4 items-center gap-4">
+					<Label for="pstatus" class="text-right">Status:</Label>
+					<Label id="ptitle" class="col-span-3">{selectedForDeleteItem?.status}</Label>
+				</div>
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
+			<!-- <AlertDialog.Action> -->
+			<form action="?/deletePage" method="post" use:enhance={enhancedPageDelete}>
+				<input type="hidden" name="pageId" value={selectedForDeleteItem?.id} />
+				<Button
+					type="submit"
+					class="bg-red-500 text-white"
+					on:click={() => {
+						deletingPage = true;
+					}}
+				>
+					{#if deletingPage}
+						<CircleDotDashed class="mr-2 h-4 w-4 animate-spin stroke-white dark:stroke-stone-950" />
+						<span>Deleting...</span>
+					{:else}
+						Delete
+					{/if}
+				</Button>
+			</form>
+			<!-- </AlertDialog.Action> -->
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
+<!-- <PreDebug {data} /> -->
 <div>
 	Dev
 	<li><a href="/pages/published-page">Published Page</a></li>

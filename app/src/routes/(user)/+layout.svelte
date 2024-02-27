@@ -38,7 +38,7 @@
 </svelte:head>
 
 <div class="h-screen w-full">
-	<div class="flex h-screen w-full overflow-y-hidden">
+	<div class="flex h-screen w-full overflow-x-hidden overflow-y-hidden">
 		<aside class="hidden h-full w-[30%] max-w-[300px] border-r border-gray-200 bg-white md:block">
 			<div class="flex h-16 items-center justify-center gap-3 border-b border-gray-200">
 				<Logo className="text-black" />
@@ -46,7 +46,7 @@
 
 			<SidePanel pages={userPanelPages} {customizationPages} />
 		</aside>
-		<aside class=" w-full bg-gray-50">
+		<aside class=" w-full overflow-x-hidden bg-gray-50">
 			<PageHeaderBlock
 				user={data?.user}
 				title={sanitizeTitle($page.url.pathname)}

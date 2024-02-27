@@ -1,6 +1,8 @@
 import type { SinglePage } from "@/types/pages-and-stuff";
-import type { PageServerLoad } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 import { dummyPages } from "@/dev/dummyPages";
+import dbTables from "@/utils/db-tables";
+import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ locals, url }) => {
     let page = Number.parseInt(url.searchParams.get('page') || '1')
@@ -9,27 +11,57 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     let sort = url.searchParams.get('sort') || '-created'
     let q = url.searchParams.get('q') || ''
 
-    console.log('page', page, 'status', status, 'limit', limit, 'sort', sort)
 
 
-    let filteredPages: SinglePage[] = [];
+
+    let filter = '';
     if (q) {
-        filteredPages = dummyPages.filter((page: SinglePage) => {
-            return page.title.includes(q) || page.content.includes(q)
+        q = q.toLowerCase()
+        filter = `title~${q} || content~${q} || slug~${q} `
+    }
+    if (status && status !== 'all') {
+        filter += `&& status = ${status}`
+    }
+
+    const pages = await locals.pb.collection(dbTables.pages).getList(page, limit, {
+        filter: filter,
+        sort: sort
+    }).catch((error) => {
+        console.error("Error while getting pages", error)
+        null
+    });
+
+
+    console.log('pages', pages)
+
+    return structuredClone(pages)
+
+
+};
+
+export const actions: Actions = {
+    deletePage: async ({ locals, request }) => {
+
+        const { pageId } = Object.fromEntries(await request.formData())
+
+        // check if user owns this page
+        // if yes, delete page and return success
+        // else any other case return success: false
+
+        const page = await locals.pb.collection(dbTables.pages).delete(pageId as string).catch((error) => {
+            // console.error("Error while getting page", error)
+            return null
         })
-    }
-    filteredPages = dummyPages
 
+        if (!page) {
+            return fail(403, {
+                message: "Failed to delete page."
+            })
+        }
 
-
-    return {
-        now: new Date().toISOString(),
-        total: filteredPages.length,
-        totalPages: Math.ceil(filteredPages.length / limit),
-        page,
-        items: filteredPages,
-
-    }
-
-
+        return {
+            success: true,
+            message: "Page deleted successfully"
+        }
+    },
 };

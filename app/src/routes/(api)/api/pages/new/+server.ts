@@ -16,13 +16,13 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
     // Validations
     const errors = { title: "", slug: "", content: "", }
     if (!validRegex.pageSlug.test(slug)) {
-        errors.slug = "Invalid Slug. Slug should be 3-20 characters long and can contain a-z A-Z 0-9"
+        errors.slug = "Invalid Slug. Slug should be 3-20 characters long and can contain a-z A-Z 0-9 - ."
     }
     if (!validRegex.pageTitle.test(title)) {
-        errors.title = "Invalid Title. Title should be atleast 5 characters long"
+        errors.title = "Invalid Title. Title should be 5-20 characters long"
     }
-    if (content?.length < 10) {
-        errors.content = "Content should be at least 10 characters long"
+    if (content?.length < 5) {
+        errors.content = "Content should be 5-1000 characters long"
     }
     if (errors.title || errors.slug || errors.content) {
         return json({ success: false, message: "", errors }, {
@@ -31,7 +31,7 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
     }
 
     // Check if page with same slug exists
-    const pageExists = await locals.pb.collection(dbTables.pages).getFirstListItem(`slug = "/${slug}" && user = "${locals.user.id}"`).catch((error) => {
+    const pageExists = await locals.pb.collection(dbTables.pages).getFirstListItem(`slug = "${slug}" && user = "${locals.user.id}"`).catch((error) => {
         console.error("Error while checking if page exists", error)
         return null
     })
@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
 
     const newPage = await locals.pb.collection(dbTables.pages).create({
         title,
-        slug: `/${slug}`,
+        slug: `${slug}`,
         content,
         status,
         user: locals.user.id,
