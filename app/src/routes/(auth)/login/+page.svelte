@@ -32,7 +32,8 @@
 				case 'redirect': {
 					toast.success(SuccessMessages.LOGIN_SUCCESS);
 					console.log('redirect');
-					goto(result.location);
+					// goto(result.location);
+					window.location.href = result.location;
 					break;
 				}
 			}
