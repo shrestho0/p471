@@ -1,3 +1,4 @@
+import type { User } from "@/types/users";
 
 export default [
     {
@@ -35,4 +36,4 @@ export default [
 
 
 
-]
+] as User[];

@@ -61,7 +61,12 @@
 					</select>
 				</div>
 			</div>
-			<Input name="q" type="text" placeholder="Search for page, with titles, slugs, or contents" />
+			<Input name="q" type="text" placeholder="Search for page, with titles or slugs or contents" />
+			<Input
+				name="qu"
+				type="text"
+				placeholder="Search for page, with user's name or email or username"
+			/>
 			<div class="grid grid-cols-4 gap-3">
 				<Button
 					variant="outline"
@@ -84,10 +89,10 @@
 		<!-- <Table.Caption>A list of your recent invoices.</Table.Caption> -->
 		<Table.Header>
 			<Table.Row>
-				<Table.Head class="w-[200px]">Title</Table.Head>
-				<Table.Head class="w-[100px]">Slug</Table.Head>
-				<Table.Head>Status</Table.Head>
-				<Table.Head>Last Updated</Table.Head>
+				<Table.Head class="w-[200px]">Name</Table.Head>
+				<Table.Head class="w-[100px]">Username</Table.Head>
+				<Table.Head>Total Pages</Table.Head>
+				<Table.Head>Created At</Table.Head>
 				<Table.Head class="text-right">Actions</Table.Head>
 			</Table.Row>
 		</Table.Header>
@@ -100,8 +105,8 @@
 						<Table.Cell>{item.status}</Table.Cell>
 						<Table.Cell>{item?.updated} [DATE]</Table.Cell>
 						<Table.Cell class="flex justify-end gap-2 ">
-							<Button variant="outline" size="sm">View</Button>
-							<Button variant="default" size="sm">Edit</Button>
+							<Button variant="outline" size="sm">View Pages</Button>
+							<Button variant="default" size="sm">Update</Button>
 							<Button variant="outline" class=" bg-indigo-400 text-white " size="sm">Delete</Button>
 						</Table.Cell>
 					</Table.Row>

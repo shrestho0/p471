@@ -61,7 +61,12 @@
 					</select>
 				</div>
 			</div>
-			<Input name="q" type="text" placeholder="Search for page, with titles, slugs, or contents" />
+			<Input name="q" type="text" placeholder="Search for page, with titles or slugs or contents" />
+			<Input
+				name="uq"
+				type="text"
+				placeholder="Search for page, with user's id, name or email or username"
+			/>
 			<div class="grid grid-cols-4 gap-3">
 				<Button
 					variant="outline"
@@ -98,10 +103,10 @@
 						<Table.Cell class="font-medium">{item.title}</Table.Cell>
 						<Table.Cell>{item.slug}</Table.Cell>
 						<Table.Cell>{item.status}</Table.Cell>
-						<Table.Cell>{item?.updated} [DATE]</Table.Cell>
+						<Table.Cell>{item?.created} [DATE]</Table.Cell>
 						<Table.Cell class="flex justify-end gap-2 ">
 							<Button variant="outline" size="sm">View</Button>
-							<Button variant="default" size="sm">Edit</Button>
+							<Button variant="default" size="sm">Ban/Unban</Button>
 							<Button variant="outline" class=" bg-indigo-400 text-white " size="sm">Delete</Button>
 						</Table.Cell>
 					</Table.Row>
