@@ -90,3 +90,9 @@ export function toTitleCase(string: string) {
     return string.toLowerCase().replace(/\b\w/g, (s) => s.toUpperCase());
     // return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export function beautiulDateTime(date: string) {
+    if (!date) return '';
+    let newDate = new Date(date);
+    return newDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+}

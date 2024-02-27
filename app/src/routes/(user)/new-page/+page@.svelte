@@ -69,7 +69,8 @@
 		{ name: 'Email', value: data?.user?.email, macro: '{{email}}' }
 	];
 
-	$: buttonsDisabled = !pageData.title.value || !pageData.slug.value || !pageData.content.value;
+	$: buttonsDisabled =
+		!pageData.title.value || !pageData.slug.value || !pageData.content.value?.length;
 
 	let loadingButtonType: 'draft' | 'published' | '' = '';
 

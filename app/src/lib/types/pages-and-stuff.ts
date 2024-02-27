@@ -7,4 +7,6 @@ export type SinglePage = {
     content: string;
     user: string;
     status: PageStatus;
+    created: string;
+    updated: string;
 }
