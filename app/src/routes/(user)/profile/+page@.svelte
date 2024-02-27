@@ -82,7 +82,7 @@
 	async function handleSubmissionClick(status: 'published') {
 		loadingButtonType = status;
 		const data = getSanitizeData();
-		const res = await fetch(InternalApiEndpoints.EDIT_PAGE + `?pageId=${pageData.pageId}`, {
+		const res = await fetch(InternalApiEndpoints.EDIT_PROFILE, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -109,6 +109,9 @@
 				position: 'top-right',
 				class: 'my-8'
 			});
+			// remove errors
+			pageData.title.error = '';
+			pageData.content.error = '';
 			// Redirect to the page
 			// window.location.href = resJson?.redirect_to;
 		} else {

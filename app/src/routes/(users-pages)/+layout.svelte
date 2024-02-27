@@ -10,6 +10,7 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { X } from 'lucide-svelte';
 	import { Button } from '@/components/ui/button';
+	import '$lib/ui/app.pcss';
 
 	// we'll keep dark and light css same
 

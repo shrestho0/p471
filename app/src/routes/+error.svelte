@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import PreDebug from '@/dev/PreDebug.svelte';
 	import { onMount } from 'svelte';
-	import NavbarHomePage from './(site)/NavbarHomePage.svelte';
+	import NavbarHomePage from '@/ui/NavbarHomePage.svelte';
 	import HeroWrapper from '@/ui/HeroWrapper.svelte';
 
 	let loading = true;

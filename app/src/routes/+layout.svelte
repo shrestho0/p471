@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { navigating } from '$app/stores';
-	import '$lib/ui/app.pcss';
-	import { Button } from '@/components/ui/button';
-	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { cubicOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import '$lib/ui/app.pcss';
 
 	// progress bar value
 	const p = tweened(0, {
