@@ -26,13 +26,19 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         filter += `${filter ? '&&' : ''} status = "${status}"`
     }
 
-    if (filter) {
-        filter += ' && slug != "/"'
-    } else {
-        filter == 'slug != "/"'
-    }
+    // if (filter) {
+    //     filter += ' && slug != "/"'
+    // } else {
+    //     filter == 'slug != "/"'
+    // }
 
-    console.log('filter', filter)
+    // if (!filter) {
+    //     filter = 'slug != "/"'
+    // } else {
+    //     filter += ' && slug != "/"'
+    // }
+
+    // console.log('filter', filter, "page", page, "limit", limit, "sort", sort, "q", q)
 
     const pages = await locals.pb.collection(dbTables.pages).getList(page, limit, {
         filter: filter,
@@ -41,13 +47,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         console.error("Error while getting pages", error);
         null;
     }) as unknown as Record;
-
-
-    // console.log('pages', pages)
-
-    // Filtering out / page
-    pages.items = pages.items.filter((p: SinglePage) => p.slug != "/")
-    console.log()
 
 
     return structuredClone(pages)

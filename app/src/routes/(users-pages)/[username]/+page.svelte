@@ -19,6 +19,7 @@
 	import UserPageHeader from '@/ui/UserPageHeader.svelte';
 	import UserPageFooter from '@/ui/UserPageFooter.svelte';
 	import type { SiteFooterType, SiteHeaderType } from '@/types/customizations.js';
+	import type { SinglePage } from '@/types/pages-and-stuff';
 </script>
 
 <svelte:head>

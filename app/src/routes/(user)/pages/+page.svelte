@@ -7,7 +7,7 @@
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import type { SinglePage } from '@/types/pages-and-stuff';
-	import { ArrowRight, CircleDotDashed } from 'lucide-svelte';
+	import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, CircleDotDashed } from 'lucide-svelte';
 	import type { User } from '@/types/users';
 	import { beautiulDateTime } from '@/utils/common';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
@@ -16,15 +16,23 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { ErrorMessages } from '@/utils/messages';
-	import { navigating } from '$app/stores';
+	import { navigating, page } from '$app/stores';
+	import * as Pagination from '$lib/components/ui/pagination';
 
-	export let data: {
+	export let data: Partial<{
 		now: Date;
-		total: number;
-		totalPages: number;
 		page: number;
+		perPage: number;
+		totalItems: number;
+		totalPages: number;
 		items: SinglePage[];
 		user: User;
+	}> = {
+		now: new Date(),
+		page: 1,
+		perPage: 5,
+		totalItems: 0,
+		totalPages: 0
 	};
 
 	let deleteDrawerOpen = false;
@@ -51,7 +59,7 @@
 					toast.error(result?.data?.message || ErrorMessages.DEFAULT_ERROR, {
 						duration: 3000,
 						position: 'top-right',
-						class: 'mt-6'
+						class: 'mt-4'
 					});
 					break;
 				default:
@@ -62,6 +70,44 @@
 			deleteDrawerOpen = false;
 		};
 	}
+
+	function sanitizePaginationLink(number: number) {
+		let url = $page.url.toString();
+
+		if (url.includes('page=')) {
+			url = url.replace(/page=\d+/, `page=${number}`);
+		} else if (url.includes('?')) {
+			url = url + `&page=${number}`;
+		} else {
+			url = url + `?page=${number}`;
+		}
+
+		return url;
+	}
+
+	// let nextPageUrl = sanitizePaginationLink(data.page + 1);
+	// let prevPageUrl = sanitizePaginationLink(data.page);
+
+	let sortItems = [
+		{ name: 'Created (DESC)', value: '-created' },
+		{ name: 'Created (ASC)', value: 'created' },
+		{ name: 'Updated (DESC)', value: '-updated' },
+		{ name: 'Updated (ASC)', value: 'updated' }
+	];
+
+	let limitItems = [
+		{ name: '5', value: 5 },
+		{ name: '10', value: 10 },
+		{ name: '25', value: 25 },
+		{ name: '50', value: 50 }
+	];
+
+	let statusItems = [
+		{ name: 'All', value: '' },
+		{ name: 'Published', value: 'published' },
+		{ name: 'Banned', value: 'banned' },
+		{ name: 'Draft', value: 'draft' }
+	];
 </script>
 
 <UserPanelItemWrapper>
@@ -75,10 +121,16 @@
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
 						name="status"
 					>
-						<option value="">All</option>
+						<!-- <option value="">All</option>
 						<option value="published">Published</option>
 						<option value="banned">Banned</option>
-						<option value="draft">Draft</option>
+						<option value="draft">Draft</option> -->
+						{#each statusItems as item}
+							<option
+								selected={$page.url.searchParams.get('status') == item.value}
+								value={item.value}>{item.name}</option
+							>
+						{/each}
 					</select>
 				</div>
 				<!-- order by -->
@@ -88,10 +140,16 @@
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
 						name="sort"
 					>
-						<option value="-created">Created (DESC)</option>
+						{$page.url.searchParams.get('sort')}
+						{#each sortItems as item}
+							<option selected={$page.url.searchParams.get('sort') == item.value} value={item.value}
+								>{item.name}</option
+							>
+						{/each}
+						<!-- <option selected={$page.url.searchParams.get('sort') ==} value="-created">Created (DESC)</option>
 						<option value="created">Created (ASC)</option>
 						<option value="-updated">Updated (DESC)</option>
-						<option value="updated">Updated (ASC)</option>
+						<option value="updated">Updated (ASC)</option> -->
 					</select>
 				</div>
 				<div class="grid w-full max-w-sm items-center gap-1.5">
@@ -100,14 +158,21 @@
 						class="border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
 						name="limit"
 					>
-						<option value={5}>5</option>
-						<option value={10}>10</option>
-						<option value={25}>25</option>
-						<option value={50}>50</option>
+						{#each limitItems as item}
+							<option
+								selected={($page.url.searchParams.get('limit') ?? 5) == item.value}
+								value={item.value}>{item.name}</option
+							>
+						{/each}
 					</select>
 				</div>
 			</div>
-			<Input name="q" type="text" placeholder="Search for page, with titles, slugs, or contents" />
+			<Input
+				name="q"
+				type="text"
+				placeholder="Search for page, with titles, slugs, or contents"
+				value={$page.url.searchParams.get('q')}
+			/>
 			<div class="grid grid-cols-4 gap-3">
 				<Button
 					variant="outline"
@@ -124,7 +189,7 @@
 </UserPanelItemWrapper>
 <UserPanelItemWrapper>
 	<!-- Data Table -->
-
+	<h2>Total items <span>{data.totalItems}</span></h2>
 	<Table.Root class=" w-full overflow-x-scroll">
 		<!-- <Table.Caption>A list of your recent invoices.</Table.Caption> -->
 		<Table.Header>
@@ -147,7 +212,7 @@
 						Loading...
 					</div>
 				</td>
-			{:else if data?.items?.length > 0}
+			{:else if data?.items?.length && data?.items?.length > 0}
 				{#each data?.items as item}
 					<Table.Row>
 						<Table.Cell class="font-medium">{item.title}</Table.Cell>
@@ -183,6 +248,11 @@
 						</Table.Cell>
 					</Table.Row>
 				{/each}
+				<!-- Pagination -->
+				<!-- page={data.page}
+					perPage={data.perPage}
+					totalItems={data.totalItems}
+					totalPages={data.totalPages} -->
 			{:else}
 				<td colspan="4" class="w-full py-4 text-center">
 					<p>No Data Found!</p>
@@ -190,6 +260,37 @@
 			{/if}
 		</Table.Body>
 	</Table.Root>
+	{#if data?.totalItems && data?.totalItems > 0}
+		<div class="pagination">
+			<div class="buttons flex items-center justify-center gap-4">
+				{#if data?.page && data?.page > 1}
+					<Button variant="outline" href={sanitizePaginationLink(data?.page ? data.page - 1 : 1)}>
+						<ChevronLeft />
+					</Button>
+				{:else}
+					<Button variant="outline" disabled>
+						<ChevronLeft />
+					</Button>
+				{/if}
+				<div class="current">
+					<Button variant="outline">
+						{data.page} / {data.totalPages}
+					</Button>
+				</div>
+
+				{#if data?.page && data?.totalPages && data.page < data.totalPages}
+					<Button variant="outline" href={sanitizePaginationLink(data?.page ? data.page + 1 : 1)}>
+						<ChevronRight />
+					</Button>
+				{:else}
+					<Button variant="outline" disabled>
+						<ChevronRight />
+					</Button>
+				{/if}
+			</div>
+		</div>
+	{/if}
+	<PreDebug {data} />
 </UserPanelItemWrapper>
 
 <AlertDialog.Root bind:open={deleteDrawerOpen}>

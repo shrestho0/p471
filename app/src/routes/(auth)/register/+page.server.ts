@@ -113,11 +113,9 @@ export const actions: Actions = {
         })
 
         // create user's profile page
-        const newProfilePage = await locals.pb.collection(dbTables.pages).create({
+        const newProfilePage = await locals.pb.collection(dbTables.profile).create({
             title: `${newUser.name}'s Profile Page`,
-            slug: '/',
             content: "# Welcome to my profile page",
-            status: 'published',
             user: newUser.id,
         }).catch((e) => {
             console.log(e); // DEBUG

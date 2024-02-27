@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { AppLinks } from '@/utils/app-links';
-	import Logo from '../../lib/ui/Logo.svelte';
+	import Logo from '@/ui/Logo.svelte';
 	import Button from '@/components/ui/button/button.svelte';
-	import LightSwitch from '../../lib/ui/LightSwitch.svelte';
+	import LightSwitch from '@/ui/LightSwitch.svelte';
 	import { toast } from 'svelte-sonner';
 	import { browser } from '$app/environment';
 	import { fly, slide } from 'svelte/transition';

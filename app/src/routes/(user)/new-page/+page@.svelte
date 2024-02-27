@@ -114,7 +114,7 @@
 				class: 'my-16'
 			});
 			// Redirect to the page
-			window.location.href = resJson?.redirect_to;
+			window.location.href = resJson?.redirect_to ?? AppLinks.USER_DASHBOARD;
 		} else {
 			// Show the error
 			if (resJson?.message)
@@ -188,6 +188,7 @@
 								bind:value={pageData.title.value}
 								name="title"
 								id="title"
+								disabled={loadingButtonType != ''}
 								required={true}
 								placeholder="Enter the title of the page"
 							/>
@@ -208,6 +209,7 @@
 								type="text"
 								name="slug"
 								id="slug"
+								disabled={loadingButtonType != ''}
 								bind:value={pageData.slug.value}
 								placeholder="Enter the slug of the page"
 							/>
@@ -227,6 +229,7 @@
 								id="content"
 								rows={15}
 								required={true}
+								disabled={loadingButtonType != ''}
 								bind:value={pageData.content.value}
 								placeholder="Enter the content of the page"
 							></Textarea>

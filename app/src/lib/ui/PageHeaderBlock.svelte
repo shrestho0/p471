@@ -124,7 +124,7 @@
 						<DropdownMenu.Group>
 							{#if regularUser}
 								<DropdownMenu.Item>
-									<a href={'/' + user.username}> Profile Page </a>
+									<a href={'/' + user.username} target="_blank"> Profile Page </a>
 								</DropdownMenu.Item>
 							{/if}
 

@@ -18,6 +18,7 @@ export const AppLinks = {
 export const InternalApiEndpoints = {
     NEW_PAGE: "/api/pages/new",
     EDIT_PAGE: "/api/pages/edit",
+    EDIT_PROFILE: "/api/pages/profile",
     SEARCH_PAGE: "/api/pages/search",
     SITE_STYLESHEET: "/api/site-style",
 }

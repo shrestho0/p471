@@ -22,8 +22,10 @@ export const ErrorMessages = {
     DEFAULT_ERROR: "Some error occured!",
 
     PAGE_NOT_FOUND: "we couldn't find this page.",
+    PAGE_NOT_PUBLIC: "This page is not public",
+    PAGE_BANNED: "This page has been banned",
 
     PAGE_TITLE_INVALID: "Invalid Title. Title should be 5-30 characters long",
     PAGE_SLUG_INVALID: "Invalid Slug. Slug should be 3-20 characters long and can contain a-z A-Z 0-9 - .",
-    PAGE_CONTENT_INVALID: "Content should be 5-1000 characters long",
+    PAGE_CONTENT_INVALID: "Content should be 5-4000 characters long",
 }

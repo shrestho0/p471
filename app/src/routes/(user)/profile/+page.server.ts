@@ -17,14 +17,19 @@ export const load: PageServerLoad = async ({ locals, params }) => {
     } as EditPageLoadData;
 
     // Find user's profile page
-    let profilePage = await locals.pb.collection(dbTables.pages).getFirstListItem(`slug = "/" && user = "${locals.user.id}"`).catch((err) => {
+    // let profilePage = await locals.pb.collection(dbTables.pages).getFirstListItem(`slug = "/" && user = "${locals.user.id}"`).catch((err) => {
+    //     console.log("Profile page could not be fetched");
+    //     return null;
+    // });
+
+    let profilePage = await locals.pb.collection(dbTables.profile).getFirstListItem(`user = "${locals.user.id}"`).catch((err) => {
         console.log("Profile page could not be fetched");
         return null;
     });
 
     if (!profilePage) {
         console.log("User's profile page doesn't exist ")
-        // create profile page
+
     }
 
     resObj.pageExists = true;

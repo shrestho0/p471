@@ -107,6 +107,9 @@
 				position: 'top-center',
 				class: 'my-8'
 			});
+			pageData.title.error = '';
+			pageData.slug.error = '';
+			pageData.content.error = '';
 			// Toast should be enough
 		} else {
 			// Show the error
