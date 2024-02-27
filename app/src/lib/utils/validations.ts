@@ -7,4 +7,9 @@ export const validRegex = {
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, // email
     password: /^.{8,255}$/, // all characters of length 8-255
 
+    pageSlug: /^[a-zA-Z0-9\s]{3,20}$/,// a-z A-Z 0-9 of length 3-20
+    pageTitle: /^.{5,}$/, // all characters of length 5 or more
+    pageContent: /^.{10,}$/, // all characters of length 10 or more
+
+
 }

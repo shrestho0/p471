@@ -28,6 +28,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { AppLinks, InternalApiEndpoints } from '@/utils/app-links';
+	import type { ResponseNewPage } from '@/types/load-data';
 
 	let pageData = {
 		title: {
@@ -77,10 +78,15 @@
 	 */
 
 	function getSanitizeData() {
+		let content_sanitized = pageData.content.value.trim();
+		availableMacros.forEach((macroObj) => {
+			content_sanitized = content_sanitized.replaceAll(macroObj.macro, macroObj.value);
+		});
+
 		return {
-			title: pageData.title.value,
-			slug: pageData.slug.value,
-			content: pageData.content.value
+			title: pageData.title.value.trim(),
+			slug: pageData.slug.value.trim(),
+			content: content_sanitized
 		};
 	}
 
@@ -97,16 +103,7 @@
 				status
 			})
 		});
-		const resJson: {
-			success: boolean;
-			redirect_to: string;
-			message: string;
-			errors?: {
-				title: string;
-				slug: string;
-				content: string;
-			};
-		} = await res.json();
+		const resJson: ResponseNewPage = await res.json();
 
 		if (resJson?.success) {
 			toast.success(resJson?.message, {
@@ -117,10 +114,12 @@
 			window.location.href = resJson?.redirect_to;
 		} else {
 			// Show the error
-			toast.error(resJson?.message, {
-				position: 'top-center',
-				class: 'mt-8'
-			});
+			if (resJson?.message)
+				toast.error(resJson?.message, {
+					position: 'top-center',
+					class: 'mt-8'
+				});
+
 			pageData.title.error = resJson?.errors?.title as string;
 			pageData.slug.error = resJson?.errors?.slug as string;
 			pageData.content.error = resJson?.errors?.content as string;
@@ -187,7 +186,6 @@
 								name="title"
 								id="title"
 								required={true}
-								disabled={Boolean(pageData.title.error)}
 								placeholder="Enter the title of the page"
 							/>
 
@@ -239,7 +237,7 @@
 					<!-- Available macros -->
 					<div class="mt-4">
 						<label for="macros" class="text-md block font-normal text-gray-700">
-							Available Macros:
+							Available Macros (can be used inside the content):
 						</label>
 						<div class="mt-1 text-sm text-gray-700">
 							<div class="">

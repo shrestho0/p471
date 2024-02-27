@@ -29,3 +29,21 @@ export type NewOrEditPageData = {
         error: string;
     };
 };
+
+export type RequestNewPage = {
+    title: string;
+    slug: string;
+    content: string;
+    status: PageStatus;
+}
+
+export type ResponseNewPage = {
+    success: boolean;
+    redirect_to: string;
+    message: string;
+    errors?: {
+        title: string;
+        slug: string;
+        content: string;
+    };
+}
