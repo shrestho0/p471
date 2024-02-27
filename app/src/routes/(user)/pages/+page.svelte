@@ -16,6 +16,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { ErrorMessages } from '@/utils/messages';
+	import { navigating } from '$app/stores';
 
 	export let data: {
 		now: Date;
@@ -138,7 +139,15 @@
 			</Table.Row>
 		</Table.Header>
 		<Table.Body>
-			{#if data?.items?.length > 0}
+			{#if $navigating}
+				<!-- Loading Spinner -->
+				<td colspan={6} class="w-full py-4 text-center">
+					<div class="flex w-full items-center justify-center gap-3">
+						<CircleDotDashed class="h-5 w-5 animate-spin" />
+						Loading...
+					</div>
+				</td>
+			{:else if data?.items?.length > 0}
 				{#each data?.items as item}
 					<Table.Row>
 						<Table.Cell class="font-medium">{item.title}</Table.Cell>

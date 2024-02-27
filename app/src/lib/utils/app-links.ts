@@ -10,6 +10,8 @@ export const AppLinks = {
     USER_LOGIN: "/login",
     USER_REGISTER: "/register",
     USER_DASHBOARD: "/dashboard",
+    USER_PAGES: "/pages",
+    USER_PROFILE_PAGE: "/profile",
 }
 
 

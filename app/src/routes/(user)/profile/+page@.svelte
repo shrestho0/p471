@@ -65,8 +65,6 @@
 		{ name: 'Email', value: data?.user?.email, macro: '{{email}}' }
 	];
 
-	$: buttonsDisabled = !pageData.title.value || !pageData.content.value;
-
 	let loadingButtonType: 'draft' | 'published' | '' = '';
 
 	/**
@@ -81,7 +79,7 @@
 		};
 	}
 
-	async function handleSubmissionClick(status: 'draft' | 'published') {
+	async function handleSubmissionClick(status: 'published') {
 		loadingButtonType = status;
 		const data = getSanitizeData();
 		const res = await fetch(InternalApiEndpoints.EDIT_PAGE + `?pageId=${pageData.pageId}`, {
@@ -104,19 +102,17 @@
 			};
 		} = await res.json();
 
+		invalidateAll();
+
 		if (resJson?.success) {
 			toast.success(resJson?.message, {
-				position: 'top-center',
-				class: 'my-16'
+				position: 'top-right',
+				class: 'my-8'
 			});
 			// Redirect to the page
-			window.location.href = resJson?.redirect_to;
+			// window.location.href = resJson?.redirect_to;
 		} else {
 			// Show the error
-			toast.error(resJson?.message, {
-				position: 'top-center',
-				class: 'mt-8'
-			});
 			pageData.title.error = resJson?.errors?.title as string;
 			pageData.content.error = resJson?.errors?.content as string;
 		}
@@ -129,6 +125,9 @@
 		pageData.title.value = data.page.title;
 		pageData.content.value = data.page.content;
 	});
+	$: buttonsDisabled = !(
+		pageData.title.value != data.page.title || pageData.content.value != data.page.content
+	);
 </script>
 
 <svelte:head>
@@ -147,7 +146,7 @@
 		<aside class="  w-full bg-gray-50">
 			<PageHeaderBlock
 				user={data?.user}
-				title="New Page"
+				title="Profile Page"
 				pages={userPanelPages}
 				{customizationPages}
 			>
@@ -178,7 +177,7 @@
 								name="title"
 								id="title"
 								required={true}
-								disabled={Boolean(pageData.title.error)}
+								disabled={loadingButtonType != ''}
 								placeholder="Enter the title of the page"
 							/>
 
@@ -199,6 +198,7 @@
 								id="content"
 								rows={15}
 								required={true}
+								disabled={loadingButtonType != ''}
 								bind:value={pageData.content.value}
 								placeholder="Enter the content of the page"
 							></Textarea>

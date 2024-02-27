@@ -8,8 +8,8 @@ export const validRegex = {
     password: /^.{8,255}$/, // all characters of length 8-255
 
     pageSlug: /^[a-zA-Z0-9\-\.]{3,20}$/,// a-z A-Z 0-9 of length 3-20 
-    pageTitle: /^.{5,20}$/, // all characters of length 5 or more
-    pageContent: /^.{5,1000}$/, // all characters of length 10 or more
+    pageTitle: /^.{5,30}$/, // all characters of length 5 to 30
+    pageContent: /^.{5,1000}$/, // all characters of length 10 to 1000
 
 
 }
