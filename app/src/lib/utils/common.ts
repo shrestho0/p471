@@ -99,6 +99,6 @@ export function beautiulDateTime(date: string) {
 }
 
 
-export function getFileUrl(collectionId: string, recordId: string, fileName: string) {
+export function getLogoUrl(collectionId: string, recordId: string, fileName: string) {
     return PUBLIC_PB_HOST + `/api/files/${collectionId}/${recordId}/${fileName}`
 }

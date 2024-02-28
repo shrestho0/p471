@@ -5,6 +5,7 @@ import { validRegex } from "@/utils/validations";
 import { redirect, type Actions, fail } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import dbTables from "@/utils/db-tables";
+import defaultCssData from "@/utils/default-css-data";
 
 
 export const load: PageServerLoad = async ({ locals, parent }) => {
@@ -142,7 +143,13 @@ export const actions: Actions = {
         });
 
 
-        if (!newUser || !newProfilePage || !newUserHeader || !newUserFooter) {
+        const newUserStyling = await locals.pb.collection(dbTables.style).create({
+            user: newUser.id,
+            ...defaultCssData
+        })
+
+
+        if (!newUser || !newProfilePage || !newUserHeader || !newUserFooter || !newUserStyling) {
             return fail(400, { message: "Failed to create user. Please ask adminstrator." });
         }
 

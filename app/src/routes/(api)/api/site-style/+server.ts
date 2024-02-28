@@ -25,9 +25,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         });
 
         if (ownerStyles && ownerStyles?.styleJson) {
-            console.log("Owner styles found", ownerStyles);
 
-            styleCss = jsonToCSS(ownerStyles.styleJson);
+            styleCss = jsonToCSS(ownerStyles as unknown as SiteStyle);
+            console.log("Owner styles found", "styleCss", styleCss, "ownerStyles", ownerStyles);
         }
 
     }
@@ -36,6 +36,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
     if (!styleCss) {
         styleCss = jsonToCSS(defaultCssData);
     }
+
 
 
 

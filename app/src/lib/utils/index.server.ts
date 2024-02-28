@@ -40,9 +40,3 @@ export function jsonToCSS(json: SiteStyle) {
     return css;
 }
 
-
-
-// get file url 
-export function getFileUrl(file: string) {
-    throw new Error('Not implemented')
-}

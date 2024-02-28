@@ -36,6 +36,7 @@ export type SiteFooterType = {
 }
 
 export type SiteStyle = {
+    id: string;
     fontFamily: string, // Global font
     fontLoadUrl: string, // URL to load font
     styleJson: StyleJsonType

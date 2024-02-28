@@ -11,7 +11,7 @@
 	import type { SingleNavItem, SiteHeaderType } from '@/types/customizations';
 	import type { User } from '@/types/users';
 	import { toast } from 'svelte-sonner';
-	import { getFileUrl } from '@/utils/common';
+	import { getLogoUrl } from '@/utils/common';
 	import PreDebug from '@/dev/PreDebug.svelte';
 	import type { SinglePage } from '@/types/pages-and-stuff';
 	import { fly, slide } from 'svelte/transition';
@@ -27,7 +27,7 @@
 	const siteHeader = data?.siteHeader as SiteHeaderType;
 
 	let logoUrl = siteHeader.logo
-		? getFileUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
+		? getLogoUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
 		: '';
 
 	function enhancedLogoRemoval() {
@@ -52,7 +52,7 @@
 					await applyAction(result);
 					invalidateAll();
 					if (result?.data?.logo) {
-						logoUrl = getFileUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo);
+						logoUrl = getLogoUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo);
 					}
 					break;
 				case 'failure':
@@ -73,7 +73,7 @@
 		};
 	}
 
-	let navLinks: SingleNavItem[] = siteHeader.nav_json;
+	let navLinks: SingleNavItem[] = siteHeader?.nav_json || [];
 
 	console.log('siteHeader.nav_json', siteHeader.nav_json);
 
@@ -280,23 +280,25 @@
 				<p class="text-red-500">Error fetching pages</p>
 			{:else}{/if}
 		</div>
-		{#each navLinks as link, idx}
-			<span class="text-sm text-black dark:text-black">
-				Link #{idx + 1}
-			</span>
-			<div class="flex flex-col items-center gap-2 md:flex-row">
-				<Input type="text" maxlength={20} bind:value={link.title} />
-				<Input type="text" bind:value={link.href} />
-				<button
-					on:click={() => {
-						navLinks = navLinks.filter((_, i) => i !== idx);
-					}}
-					class="text-bl h-6 w-6 rounded-md bg-stone-500 text-white"
-				>
-					<X class="" />
-				</button>
-			</div>
-		{/each}
+		{#if navLinks?.length > 0}
+			{#each navLinks as link, idx}
+				<span class="text-sm text-black dark:text-black">
+					Link #{idx + 1}
+				</span>
+				<div class="flex flex-col items-center gap-2 md:flex-row">
+					<Input type="text" maxlength={20} bind:value={link.title} />
+					<Input type="text" bind:value={link.href} />
+					<button
+						on:click={() => {
+							navLinks = navLinks.filter((_, i) => i !== idx);
+						}}
+						class="text-bl h-6 w-6 rounded-md bg-stone-500 text-white"
+					>
+						<X class="" />
+					</button>
+				</div>
+			{/each}
+		{/if}
 	</div>
 	<div class=" flex gap-4">
 		<Button
