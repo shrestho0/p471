@@ -3,7 +3,10 @@ export type User = {
     username: string;
     email: string;
     name: string;
-    password?: string; // for dummy data
+    password?: string;
+    passwordConfirm?: string;
+    created: string;
+    updated: string;
 }
 
 export type Admin = {

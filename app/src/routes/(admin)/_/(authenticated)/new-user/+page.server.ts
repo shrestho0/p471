@@ -1,24 +1,8 @@
-import { AppLinks } from "@/utils/app-links";
-import { setPBSiteKey } from "@/utils/index.server";
-import { ErrorMessages } from "@/utils/messages";
-import { validRegex } from "@/utils/validations";
-import { redirect, type Actions, fail } from "@sveltejs/kit";
-import type { PageServerLoad } from "./$types";
 import dbTables from "@/utils/db-tables";
 import defaultCssData from "@/utils/default-css-data";
-
-
-export const load: PageServerLoad = async ({ locals, parent }) => {
-    await parent();
-    if (locals.user) {
-        return redirect(302, "/dashboard");
-    }
-
-    if (locals.admin) {
-        return redirect(302, "/_");
-    }
-
-};
+import { ErrorMessages } from "@/utils/messages";
+import { validRegex } from "@/utils/validations";
+import { fail, type Actions } from "@sveltejs/kit";
 
 export const actions: Actions = {
     default: async ({ locals, request }) => {
@@ -78,7 +62,7 @@ export const actions: Actions = {
 
         // Validations from server
 
-        setPBSiteKey(locals.pb); // To tell pb that this is from web app
+        // setPBSiteKey(locals.pb); // To tell pb that this is from web app
 
 
         // Check if email exists in database
@@ -155,7 +139,10 @@ export const actions: Actions = {
         }
 
 
-        return redirect(302, AppLinks.USER_LOGIN);
+        // return redirect(302, AppLinks.USER_LOGIN);
+        return {
+            message: "User created successfully",
+        }
 
 
 
