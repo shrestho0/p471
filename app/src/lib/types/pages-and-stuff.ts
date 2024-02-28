@@ -1,3 +1,4 @@
+import type { User } from "./users";
 
 export type PageStatus = 'published' | 'draft' | 'banned';
 export type SinglePage = {
@@ -9,4 +10,7 @@ export type SinglePage = {
     status: PageStatus;
     created: string;
     updated: string;
+    expand?: {
+        user?: User
+    }
 }

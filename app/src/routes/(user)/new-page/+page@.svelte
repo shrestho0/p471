@@ -121,6 +121,13 @@
 
 		loadingButtonType = '';
 	}
+
+	function populateDummyData() {
+		pageData.title.value = Math.random().toString(36).substring(2, 15);
+		pageData.slug.value = Math.random().toString(36).substring(2, 15);
+		pageData.content.value =
+			Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+	}
 </script>
 
 <svelte:head>
@@ -170,6 +177,10 @@
 			<!-- <UserPanelItemWrapper> -->
 			<!-- Page Title Input-->
 			<PageContentBlock>
+				<!--Dev -->
+				<Button on:click={populateDummyData}>Populate Dummy Data</Button>
+				<!--Dev -->
+
 				<div class=" m-2 rounded-lg bg-white px-8 py-4 shadow-md md:m-4">
 					<form method="post" on:submit|preventDefault class="mt-3">
 						<label for="title" class="text-md block font-normal text-gray-700"> Title </label>
