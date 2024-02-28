@@ -19,13 +19,10 @@
 	import type { SinglePage } from '@/types/pages-and-stuff';
 	import { invalidateAll } from '$app/navigation';
 	import { navigating } from '$app/stores';
+	import macros from '@/utils/macros';
 
 	export let data: {
-		user: {
-			name: string;
-			email: string;
-			username: string;
-		};
+		user: any;
 		page: SinglePage;
 		success: boolean;
 		message?: string;
@@ -258,13 +255,14 @@
 							</div>
 						</div>
 						<!-- Available macros -->
+						<!-- Available macros -->
 						<div class="mt-4">
 							<label for="macros" class="text-md block font-normal text-gray-700">
 								Available Macros:
 							</label>
 							<div class="mt-1 text-sm text-gray-700">
 								<div class="">
-									{#each availableMacros as macroObj}
+									{#each macros as macroObj}
 										<div class="m-1 flex gap-2">
 											<Button
 												title="Copy to clipboard"
@@ -276,7 +274,7 @@
 											>
 												{macroObj.macro}
 												<Minus />
-												{macroObj.name} ({macroObj.value})
+												{macroObj.name} ({data?.user[macroObj.userKey]})
 											</Button>
 										</div>
 									{/each}

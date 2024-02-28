@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import NavbarHomePage from '@/ui/NavbarHomePage.svelte';
 	import HeroWrapper from '@/ui/HeroWrapper.svelte';
+	import { ModeWatcher } from 'mode-watcher';
 
 	let loading = true;
 	onMount(() => {
@@ -34,3 +35,4 @@
 		Loading...
 	{/if}
 </div>
+<ModeWatcher defaultMode="dark" />

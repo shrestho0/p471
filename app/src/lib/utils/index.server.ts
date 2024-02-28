@@ -2,6 +2,7 @@ import type { SiteStyle } from "@/types/customizations";
 
 
 import { PB_SITE_KEY } from '$env/static/private';
+import { fail } from "@sveltejs/kit";
 
 
 export async function setPBSiteKey(pb: import('pocketbase').default) {
@@ -37,4 +38,11 @@ export function jsonToCSS(json: SiteStyle) {
     }
 
     return css;
+}
+
+
+
+// get file url 
+export function getFileUrl(file: string) {
+    throw new Error('Not implemented')
 }

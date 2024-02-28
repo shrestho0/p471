@@ -1,15 +1,34 @@
 <script lang="ts">
-	import { Skeleton } from '$lib/components/ui/skeleton';
 	import Button from '@/components/ui/button/button.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { X } from 'lucide-svelte';
+	import { CircleDashed, X } from 'lucide-svelte';
 
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
-	import type { SingleNavItem } from '@/types/customizations';
+	import type { SingleNavItem, SiteHeaderType } from '@/types/customizations';
+	import type { User } from '@/types/users';
+	import { toast } from 'svelte-sonner';
+	import { getFileUrl } from '@/utils/common';
+	import PreDebug from '@/dev/PreDebug.svelte';
+	import type { SinglePage } from '@/types/pages-and-stuff';
+	import { fly, slide } from 'svelte/transition';
+
+	const loadingStuff = {
+		changeTitle: false,
+		changeLogo: false,
+		removeLogo: false,
+		updateNavLinks: false
+	};
+
+	export let data: { siteHeader: SiteHeaderType; user: User };
+	const siteHeader = data?.siteHeader as SiteHeaderType;
+
+	let logoUrl = siteHeader.logo
+		? getFileUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
+		: '';
 
 	function enhancedLogoRemoval() {
 		return async ({ result }: { result: ActionResult }) => {
@@ -19,26 +38,44 @@
 		};
 	}
 
-	function enhancedLogoChange() {
+	function enhancedFormSubmission() {
 		return async ({ result }: { result: ActionResult }) => {
 			// Do Something
-			await applyAction(result);
-			invalidateAll();
+
+			switch (result.type) {
+				case 'success':
+					toast.success(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					await applyAction(result);
+					invalidateAll();
+					if (result?.data?.logo) {
+						logoUrl = getFileUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo);
+					}
+					break;
+				case 'failure':
+					toast.error(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					await applyAction(result);
+					break;
+				default:
+					break;
+			}
+
+			loadingStuff.changeLogo = false;
+			loadingStuff.removeLogo = false;
+			loadingStuff.updateNavLinks = false;
 		};
 	}
 
-	function enhancedNavLinksChange() {
-		return async ({ result }: { result: ActionResult }) => {
-			// Do Something
-			await applyAction(result);
-			invalidateAll();
-		};
-	}
+	let navLinks: SingleNavItem[] = siteHeader.nav_json;
 
-	let navLinks: SingleNavItem[] = [
-		{ title: 'A', href: '/a' },
-		{ title: 'B', href: '/a' }
-	];
+	console.log('siteHeader.nav_json', siteHeader.nav_json);
 
 	$: nav_json_internal = JSON.stringify(navLinks);
 
@@ -49,14 +86,14 @@
 		message: ''
 	} as {
 		q: string;
-		results: SingleNavItem[];
+		results: SinglePage[];
 		status: 'idle' | 'loading' | 'success' | 'error';
 		message?: string;
 	};
 
 	async function searchPages() {
 		searchObj.status = 'loading';
-		const endpoint = `/api/search/?t=page&q=${searchObj.q}`;
+		const endpoint = `/api/pages/search/?t=page&q=${searchObj.q}`;
 		const res = await fetch(endpoint);
 		const data = await res.json();
 		if (data?.success === true) {
@@ -73,6 +110,25 @@
 	 */
 </script>
 
+<UserPanelItemWrapper title="Site Title">
+	<div class="sec flex flex-col gap-3 py-3">
+		<div class="user-logo">
+			<form
+				action="?/changeTitle"
+				class="flex items-center gap-2 text-black dark:text-black"
+				method="post"
+				use:enhance={enhancedFormSubmission}
+			>
+				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+				<Input name="site_title" type="text" bind:value={siteHeader.site_title} />
+				<Button type="submit" class="bg-black text-white">Update Title</Button>
+			</form>
+		</div>
+	</div>
+</UserPanelItemWrapper>
+
+<!-- <PreDebug data={siteHeader} /> -->
+
 <UserPanelItemWrapper title="Site Logo">
 	<div class="sec flex flex-col gap-3 py-3">
 		<div class="user-logo">
@@ -80,10 +136,34 @@
 				action="?/removeLogo"
 				class="flex items-center gap-2 text-black dark:text-black"
 				method="post"
-				use:enhance={enhancedLogoRemoval}
+				use:enhance={enhancedFormSubmission}
 			>
-				[[LOGO IMAGE]]
-				<Button type="submit" class="bg-black text-white">Remove</Button>
+				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+				{#key logoUrl}
+					{#if logoUrl}
+						<div class="flex flex-col gap-2 py-3">
+							<!-- [[LOGO IMAGE]] -->
+							<img src={logoUrl} alt="Site Logo" class="w-20 border bg-gray-200 p-2" />
+
+							<Button
+								type="submit"
+								on:click={() => {
+									loadingStuff.removeLogo = true;
+								}}
+								variant="outline"
+							>
+								{#if loadingStuff.removeLogo}
+									<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+									Removing Logo
+								{:else}
+									Remove
+								{/if}
+							</Button>
+						</div>
+					{:else}
+						<p class="py-2 text-black dark:text-black">No logo uploaded</p>
+					{/if}
+				{/key}
 			</form>
 		</div>
 
@@ -91,11 +171,28 @@
 			action="?/changeLogo"
 			class="grid w-full max-w-sm items-center gap-1.5"
 			method="post"
-			use:enhance={enhancedLogoChange}
+			use:enhance={enhancedFormSubmission}
+			enctype="multipart/form-data"
 		>
+			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+
 			<Label for="picture" class="text-black dark:text-black">Upload new logo</Label>
-			<Input id="picture" type="file" />
-			<Button type="submit" class="bg-black text-white">Change Logo</Button>
+
+			<Input required name="logo" id="picture" type="file" accept="image/*" />
+			<Button
+				on:click={() => {
+					loadingStuff.changeLogo = true;
+				}}
+				type="submit"
+				class="bg-black text-white"
+			>
+				{#if loadingStuff.changeLogo}
+					<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+					Changing Logo
+				{:else}
+					Change Logo
+				{/if}
+			</Button>
 		</form>
 	</div>
 </UserPanelItemWrapper>
@@ -105,13 +202,32 @@
 		<div class="w-full">
 			<h2>Search for pages and add links:</h2>
 			<form class="flex gap-3" on:submit|preventDefault>
-				<Input bind:value={searchObj.q} type="text" placeholder="Search for pages" minlength={1} />
+				<Input
+					bind:value={searchObj.q}
+					type="text"
+					placeholder="Search for pages with title or slug"
+					minlength={1}
+				/>
+
 				<Button
 					type="submit"
 					on:click={searchPages}
 					disabled={searchObj.q?.trim()?.length < 1}
 					class="bg-black text-white">Search</Button
 				>
+				{#if searchObj.status === 'success'}
+					<div in:fly>
+						<Button
+							type="button"
+							on:click={() => {
+								searchObj.q = '';
+								searchObj.results = [];
+								searchObj.status = 'idle';
+							}}
+							class="bg-red-500/80 text-white">Reset</Button
+						>
+					</div>
+				{/if}
 			</form>
 
 			{#if searchObj.status === 'loading'}
@@ -126,7 +242,8 @@
 					<table class="table table-fixed items-center gap-2">
 						<tr>
 							<th>Page Title</th>
-							<th colspan="2">Actions</th>
+							<th>Slug</th>
+							<th class="w-200">Actions</th>
 						</tr>
 						{#each searchObj.results as result}
 							<tr class="m-3 py-3">
@@ -134,14 +251,23 @@
 									<span class="text-sm text-black dark:text-black">{result.title}</span>
 								</td>
 								<td>
-									<Button variant="outline" class="" href={result.href} target="_blank"
-										>Preview</Button
+									<span class="text-sm text-black dark:text-black">/{result.slug}</span>
+								</td>
+								<td>
+									<Button
+										variant="outline"
+										class=""
+										href={`/${data?.user?.username}/${result.slug}`}
+										target="_blank">Preview</Button
 									>
 								</td>
 								<td>
 									<Button
 										on:click={() => {
-											navLinks = [...navLinks, result];
+											navLinks = [
+												...navLinks,
+												{ title: result.title, href: `/${data?.user?.username}/${result.slug}` }
+											];
 										}}
 										class="bg-black text-white">Add</Button
 									>
@@ -152,7 +278,7 @@
 				{/if}
 			{:else if searchObj.status === 'error'}
 				<p class="text-red-500">Error fetching pages</p>
-			{/if}
+			{:else}{/if}
 		</div>
 		{#each navLinks as link, idx}
 			<span class="text-sm text-black dark:text-black">
@@ -160,7 +286,7 @@
 			</span>
 			<div class="flex flex-col items-center gap-2 md:flex-row">
 				<Input type="text" maxlength={20} bind:value={link.title} />
-				<Input type="text" bind:value={link.title} />
+				<Input type="text" bind:value={link.href} />
 				<button
 					on:click={() => {
 						navLinks = navLinks.filter((_, i) => i !== idx);
@@ -182,9 +308,24 @@
 			}}>{navLinks?.length > 0 ? 'Add another link' : 'Add link'}</Button
 		>
 		<!-- We'll send the ready json-->
-		<form action="?/changeNavLinks" method="post" use:enhance={enhancedNavLinksChange}>
+		<form action="?/changeNavLinks" method="post" use:enhance={enhancedFormSubmission}>
+			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+
 			<input type="hidden" name="nav_json" bind:value={nav_json_internal} />
-			<Button class="bg-black text-white">Save/Update Links</Button>
+			<Button
+				type="submit"
+				on:click={() => {
+					loadingStuff.updateNavLinks = true;
+				}}
+				class="bg-black text-white"
+			>
+				{#if loadingStuff.updateNavLinks}
+					<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+					Updating Links
+				{:else}
+					Update Links
+				{/if}
+			</Button>
 		</form>
 	</div>
 </UserPanelItemWrapper>

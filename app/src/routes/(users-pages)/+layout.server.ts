@@ -39,6 +39,10 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
                 // console.log("page banned")
             }
 
+            if (page.status == "banned" && !(locals?.user?.id == page.user)) {
+                return error(403, ErrorMessages.PAGE_BANNED);
+            }
+
             return {
                 pageOwner: structuredClone(user),
                 pageContent: structuredClone(page),

@@ -12,11 +12,7 @@
 	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	export let data: {
-		user: {
-			name: string;
-			email: string;
-			username: string;
-		};
+		user: any;
 	} & EditPageLoadData;
 	import { Button } from '@/components/ui/button';
 	import Alert from '@/components/ui/alert/alert.svelte';
@@ -59,11 +55,7 @@
 
 	// }
 
-	let availableMacros = [
-		{ name: 'Name', value: data?.user?.name, macro: '{{name}}' },
-		{ name: 'Username', value: data?.user?.username, macro: '{{username}}' },
-		{ name: 'Email', value: data?.user?.email, macro: '{{email}}' }
-	];
+	import macros from '@/utils/macros';
 
 	let loadingButtonType: 'draft' | 'published' | '' = '';
 
@@ -219,7 +211,7 @@
 						</label>
 						<div class="mt-1 text-sm text-gray-700">
 							<div class="">
-								{#each availableMacros as macroObj}
+								{#each macros as macroObj}
 									<div class="m-1 flex gap-2">
 										<Button
 											title="Copy to clipboard"
@@ -231,7 +223,7 @@
 										>
 											{macroObj.macro}
 											<Minus />
-											{macroObj.name} ({macroObj.value})
+											{macroObj.name} ({data?.user[macroObj.userKey]})
 										</Button>
 									</div>
 								{/each}

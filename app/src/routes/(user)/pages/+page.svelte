@@ -290,7 +290,7 @@
 			</div>
 		</div>
 	{/if}
-	<PreDebug {data} />
+	<!-- <PreDebug {data} /> -->
 </UserPanelItemWrapper>
 
 <AlertDialog.Root bind:open={deleteDrawerOpen}>
@@ -339,9 +339,9 @@
 	</AlertDialog.Content>
 </AlertDialog.Root>
 <!-- <PreDebug {data} /> -->
-<div>
+<!-- <div>
 	Dev
 	<li><a href="/pages/published-page">Published Page</a></li>
 	<li><a href="/pages/banned-page">Banned Page</a></li>
 	<li><a href="/pages/draft-page">Saved as Draft Page</a></li>
-</div>
+</div> -->

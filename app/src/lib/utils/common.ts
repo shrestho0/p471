@@ -1,4 +1,5 @@
 import { browser } from "$app/environment";
+import { PUBLIC_PB_HOST } from "$env/static/public";
 
 export function md5(inputString: string): string {
     /**
@@ -95,4 +96,9 @@ export function beautiulDateTime(date: string) {
     if (!date) return '';
     let newDate = new Date(date);
     return newDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+}
+
+
+export function getFileUrl(collectionId: string, recordId: string, fileName: string) {
+    return PUBLIC_PB_HOST + `/api/files/${collectionId}/${recordId}/${fileName}`
 }

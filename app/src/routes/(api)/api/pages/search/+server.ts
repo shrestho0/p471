@@ -1,10 +1,11 @@
-import { dummyPages } from '@/dev/dummyPages';
-import type { SinglePage } from '@/types/pages-and-stuff';
+
 import { json } from '@sveltejs/kit';
 
+import dbTables from '$lib/utils/db-tables';
 
+import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, locals }) => {
     const q = url.searchParams.get('q'); // query
     const t = url.searchParams.get('t'); // type
     if (!q) {
@@ -20,12 +21,15 @@ export const GET = async ({ url }) => {
 
     switch (t) {
         case 'page':
-            // search for pages with title or slug matching the query
-            const results = dummyPages.filter(page => page.title.includes(q) || page.slug.includes(q));
+
+            const pages = await locals.pb.collection(dbTables.pages).getFullList({
+                filter: `title ~ "${q}" || slug ~ "${q}"`,
+            });
+
             return json({
                 success: true,
                 query: q,
-                results
+                results: structuredClone(pages)
             });
         default:
             return json({
@@ -38,3 +42,4 @@ export const GET = async ({ url }) => {
 
     }
 };
+

@@ -2,7 +2,7 @@ import { redirect, type Actions, fail } from "@sveltejs/kit";
 import { ErrorMessages } from "@/utils/messages";
 import DBTables from "@/utils/db-tables";
 
-import { PB_HOST } from "$env/static/private";
+import { PUBLIC_PB_HOST } from "$env/static/public";
 
 import Pocketbase, { Admin, Record } from 'pocketbase';
 
@@ -16,7 +16,7 @@ export const actions: Actions = {
             try {
 
                 // check if admin entered an correct old password
-                const newPb = new Pocketbase(PB_HOST);
+                const newPb = new Pocketbase(PUBLIC_PB_HOST);
                 const adminWithOldPassword = await newPb.admins.authWithPassword(String(locals?.admin?.email), oldPassword);
                 newPb.authStore.clear();
 
