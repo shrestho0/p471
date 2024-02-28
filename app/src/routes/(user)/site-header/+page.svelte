@@ -5,12 +5,14 @@
 	import { applyAction, enhance } from '$app/forms';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { X } from 'lucide-svelte';
+	import { CircleDashed, X } from 'lucide-svelte';
 
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	import type { SingleNavItem, SiteHeaderType } from '@/types/customizations';
 	import type { User } from '@/types/users';
 	import { toast } from 'svelte-sonner';
+	import { getFileUrl } from '@/utils/common';
+	import PreDebug from '@/dev/PreDebug.svelte';
 
 	function enhancedLogoRemoval() {
 		return async ({ result }: { result: ActionResult }) => {
@@ -23,8 +25,32 @@
 	function enhancedLogoChange() {
 		return async ({ result }: { result: ActionResult }) => {
 			// Do Something
+
+			switch (result.type) {
+				case 'success':
+					toast.success(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					invalidateAll();
+					logoUrl = result?.data?.logo
+						? getFileUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo)
+						: '';
+					break;
+				case 'failure':
+					toast.error(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					break;
+				default:
+					break;
+			}
+
+			loadingStuff.changeLogo = false;
 			await applyAction(result);
-			invalidateAll();
 		};
 	}
 
@@ -83,7 +109,7 @@
 
 	async function searchPages() {
 		searchObj.status = 'loading';
-		const endpoint = `/api/search/?t=page&q=${searchObj.q}`;
+		const endpoint = `/api/pages/search/?t=page&q=${searchObj.q}`;
 		const res = await fetch(endpoint);
 		const data = await res.json();
 		if (data?.success === true) {
@@ -99,11 +125,21 @@
 	 * User Searches for links
 	 */
 
+	const loadingStuff = {
+		changeTitle: false,
+		changeLogo: false,
+		removeLogo: false
+	};
+
 	export let data: { siteHeader: SiteHeaderType; user: User };
 	const siteHeader = data?.siteHeader as SiteHeaderType;
+
+	let logoUrl = siteHeader.logo
+		? getFileUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
+		: '';
 </script>
 
-<UserPanelItemWrapper title="Site Logo">
+<UserPanelItemWrapper title="Site Title">
 	<div class="sec flex flex-col gap-3 py-3">
 		<div class="user-logo">
 			<form
@@ -120,6 +156,8 @@
 	</div>
 </UserPanelItemWrapper>
 
+<!-- <PreDebug data={siteHeader} /> -->
+
 <UserPanelItemWrapper title="Site Logo">
 	<div class="sec flex flex-col gap-3 py-3">
 		<div class="user-logo">
@@ -127,10 +165,34 @@
 				action="?/removeLogo"
 				class="flex items-center gap-2 text-black dark:text-black"
 				method="post"
-				use:enhance={enhancedLogoRemoval}
+				use:enhance={enhancedLogoChange}
 			>
-				[[LOGO IMAGE]]
-				<Button type="submit" class="bg-black text-white">Remove</Button>
+				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+				{#key logoUrl}
+					{#if logoUrl}
+						<div class="flex flex-col gap-2 py-3">
+							<!-- [[LOGO IMAGE]] -->
+							<img src={logoUrl} alt="Site Logo" class="w-20 border bg-gray-200 p-2" />
+
+							<Button
+								type="submit"
+								on:click={() => {
+									loadingStuff.removeLogo = true;
+								}}
+								variant="outline"
+							>
+								{#if loadingStuff.removeLogo}
+									<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+									Removing Logo
+								{:else}
+									Remove
+								{/if}
+							</Button>
+						</div>
+					{:else}
+						<p class="py-2 text-black dark:text-black">No logo uploaded</p>
+					{/if}
+				{/key}
 			</form>
 		</div>
 
@@ -139,10 +201,27 @@
 			class="grid w-full max-w-sm items-center gap-1.5"
 			method="post"
 			use:enhance={enhancedLogoChange}
+			enctype="multipart/form-data"
 		>
+			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+
 			<Label for="picture" class="text-black dark:text-black">Upload new logo</Label>
-			<Input id="picture" type="file" />
-			<Button type="submit" class="bg-black text-white">Change Logo</Button>
+
+			<Input required name="logo" id="picture" type="file" accept="image/*" />
+			<Button
+				on:click={() => {
+					loadingStuff.changeLogo = true;
+				}}
+				type="submit"
+				class="bg-black text-white"
+			>
+				{#if loadingStuff.changeLogo}
+					<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+					Changing Logo
+				{:else}
+					Change Logo
+				{/if}
+			</Button>
 		</form>
 	</div>
 </UserPanelItemWrapper>

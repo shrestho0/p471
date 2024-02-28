@@ -1,8 +1,10 @@
-import { PB_HOST, PB_SITE_KEY } from "$env/static/private";
+import { PB_SITE_KEY } from "$env/static/private";
+import { PUBLIC_PB_HOST } from "$env/static/public";
 import type { Handle } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
 
 import Pocketbase, { Admin, Record } from 'pocketbase';
+
 
 
 /**
@@ -14,7 +16,7 @@ import Pocketbase, { Admin, Record } from 'pocketbase';
 
 export const AuthHandler = (async ({ event, resolve }) => {
 
-    if (!PB_HOST || !PB_SITE_KEY) {
+    if (!PUBLIC_PB_HOST || !PB_SITE_KEY) {
 
         console.error("PB_HOST || PB_SITE_KEY  is not set. This service is dependent on Pocketbase, thus the keys are required.");
         process.exit(68);
@@ -22,7 +24,7 @@ export const AuthHandler = (async ({ event, resolve }) => {
 
 
     // Setting up pb
-    event.locals.pb = new Pocketbase(PB_HOST)
+    event.locals.pb = new Pocketbase(PUBLIC_PB_HOST)
 
     // as pb will be used inside server load functions
     if (!event.locals.pb) {

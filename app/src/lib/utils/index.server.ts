@@ -42,13 +42,7 @@ export function jsonToCSS(json: SiteStyle) {
 
 
 
-const UPDATE_RATE_LIMIT_TIME = 1000 * 60 * 5; // 5 minutes
-export function rateLimitUpdate(dateString: string) {
-    const date = new Date(dateString);
-    const now = new Date();
-    if (now.getTime() - date.getTime() > UPDATE_RATE_LIMIT_TIME) {
-
-        return true;
-    }
-    return fail(429, { message: "Rate limit exceeded" });
+// get file url 
+export function getFileUrl(file: string) {
+    throw new Error('Not implemented')
 }

@@ -52,6 +52,41 @@ export const actions: Actions = {
 
     },
 
+    removeLogo: async ({ locals, request }) => {
+        const { siteHeaderId } = Object.fromEntries(await request.formData()) as {
+            siteHeaderId: string,
+        };
+
+        const updatedHeader = await locals.pb.collection(dbTables.header).update(siteHeaderId, { logo: null }).catch((err) => {
+            console.log("Logo could not be removed", err)
+            return null
+        })
+
+        if (!updatedHeader) return fail(500, { message: "Logo could not be removed" })
+
+        return {
+            message: "Logo removed",
+        }
+    },
+
+    changeLogo: async ({ locals, request }) => {
+        const formData = await request.formData()
+
+        console.log(formData)
+
+        const updatedHeader = await locals.pb.collection(dbTables.header).update(formData.get('siteHeaderId') as string, formData).catch((err) => {
+            console.log("Logo could not be updated", err)
+            return null
+        })
+
+        if (!updatedHeader) return fail(500, { message: "Logo could not be updated" })
+
+        return {
+            message: "Logo updated",
+            logo: updatedHeader.logo
+        }
+    }
+
 };
 
 function limitUpdate(updateString: string) {
