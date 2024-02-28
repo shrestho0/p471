@@ -3,34 +3,58 @@
 	import { invalidateAll } from '$app/navigation';
 	import { Button } from '@/components/ui/button';
 	import Input from '@/components/ui/input/input.svelte';
-	import type { SingleSocialItem } from '@/types/customizations';
+	import type { SingleSocialItem, SiteFooterType } from '@/types/customizations';
+	import type { User } from '@/types/users';
 
 	import UserPanelItemWrapper from '@/ui/UserPanelItemWrapper.svelte';
 	import type { ActionResult } from '@sveltejs/kit';
-	import { X } from 'lucide-svelte';
+	import { CircleDashed, X } from 'lucide-svelte';
+	import { toast } from 'svelte-sonner';
 
-	function enhancedFooterTextChange() {
+	const loadingStuff = {
+		footerText: false,
+		socialLinks: false
+	};
+	export let data: { siteFooter: SiteFooterType; user: User };
+	const siteFooter = data?.siteFooter as SiteFooterType;
+
+	function enhancedFormSubmission() {
 		return async ({ result }: { result: ActionResult }) => {
 			// Do Something
-			await applyAction(result);
+
+			switch (result.type) {
+				case 'success':
+					toast.success(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					// Do something
+					break;
+				case 'failure':
+					toast.error(result?.data?.message, {
+						duration: 3000,
+						position: 'top-right',
+						class: 'mt-8'
+					});
+					// Do something
+					break;
+				default:
+					// Do something
+					break;
+			}
+
+			loadingStuff.footerText = false;
+			loadingStuff.socialLinks = false;
+
 			invalidateAll();
+			await applyAction(result);
 		};
 	}
 
-	function enhancedsocialLinksChange() {
-		return async ({ result }: { result: ActionResult }) => {
-			// Do Something
-			await applyAction(result);
-			invalidateAll();
-		};
-	}
+	let socialLinks: SingleSocialItem[] = siteFooter?.social_json || [];
 
-	let socialLinks: SingleSocialItem[] = [
-		{ title: 'A', href: '/a', fa_icon: 'fa-facebook' },
-		{ title: 'B', href: '/a', fa_icon: 'fa-twitter' }
-	];
-
-	$: nav_json_internal = JSON.stringify(socialLinks);
+	$: social_json = JSON.stringify(socialLinks);
 </script>
 
 <UserPanelItemWrapper title="Footer Text">
@@ -39,9 +63,24 @@
 			action="?/changeFooterText"
 			class="grid w-full max-w-sm items-center gap-1.5"
 			method="post"
+			use:enhance={enhancedFormSubmission}
 		>
-			<Input id="footerText" type="text" />
-			<Button type="submit" class="bg-black text-white">Change Footer Text</Button>
+			<input type="hidden" name="siteFooterId" value={siteFooter?.id} />
+			<Input name="text" id="text" type="text" value={siteFooter?.text} />
+
+			<Button
+				type="submit"
+				on:click={() => {
+					loadingStuff.footerText = true;
+				}}
+				class="bg-black text-white"
+			>
+				{#if loadingStuff.footerText}
+					<CircleDashed class="mr-2 h-5 w-5 animate-spin" /> Updating...
+				{:else}
+					Update Footer Text
+				{/if}
+			</Button>
 		</form>
 	</div>
 </UserPanelItemWrapper>
@@ -54,7 +93,7 @@
 			</span>
 			<div class="flex flex-col items-center gap-2 md:flex-row">
 				<Input type="text" maxlength={20} bind:value={link.title} />
-				<Input type="text" bind:value={link.title} />
+				<Input type="text" bind:value={link.href} />
 				<Input type="text" bind:value={link.fa_icon} />
 
 				<button
@@ -77,13 +116,28 @@
 			class=" "
 			on:click={() => {
 				console.log('Add Link');
-				socialLinks = [...socialLinks, { title: 'Link Title', href: '/', fa_icon: 'facebook' }];
+				socialLinks = [...socialLinks, { title: 'Link Title', href: '/', fa_icon: 'fa fa-[X]' }];
 			}}
 			>{socialLinks?.length > 0 ? 'Add another link' : 'Add link'}
 		</Button>
-		<form action="?/changeSocialLinks" use:enhance={enhancedsocialLinksChange} method="post">
-			<input type="hidden" name="social_json" bind:value={nav_json_internal} />
-			<Button class="bg-black text-white">Save/Update Links</Button>
-		</form>
+		{#if socialLinks?.length > 0}
+			<form action="?/changeSocialLinks" use:enhance={enhancedFormSubmission} method="post">
+				<input type="hidden" name="siteFooterId" value={siteFooter?.id} />
+				<input type="hidden" name="social_json" bind:value={social_json} />
+				<Button
+					type="submit"
+					on:click={() => {
+						loadingStuff.socialLinks = true;
+					}}
+					class="bg-black text-white"
+				>
+					{#if loadingStuff.socialLinks}
+						<CircleDashed class="mr-2 h-5 w-5 animate-spin" /> Updating...
+					{:else}
+						Update Social Links
+					{/if}
+				</Button>
+			</form>
+		{/if}
 	</div>
 </UserPanelItemWrapper>

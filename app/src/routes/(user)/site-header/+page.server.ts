@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
     changeTitle: async ({ locals, request }) => {
-        if (!locals.user) return redirect(307, AppLinks.USER_LOGIN)
+        // if (!locals.user) return redirect(307, AppLinks.USER_LOGIN)
 
         const { siteHeaderId, site_title } = Object.fromEntries(await request.formData()) as {
             siteHeaderId: string,

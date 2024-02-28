@@ -30,6 +30,7 @@ export type SiteHeaderType = {
 };
 
 export type SiteFooterType = {
+    id: string,
     text: string,
     social_json: SingleSocialItem[]
 }

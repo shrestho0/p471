@@ -8,7 +8,8 @@
 		social_json: [
 			{ title: 'Facebook', href: '#', fa_icon: 'facebook' },
 			{ title: 'Twitter', href: '#', fa_icon: 'twitter' }
-		]
+		],
+		id: ''
 	};
 </script>
 
