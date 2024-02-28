@@ -85,6 +85,21 @@ export const actions: Actions = {
             message: "Logo updated",
             logo: updatedHeader.logo
         }
+    },
+    changeNavLinks: async ({ locals, request }) => {
+        const formData = await request.formData()
+
+        const updatedHeader = await locals.pb.collection(dbTables.header).update(formData.get('siteHeaderId') as string, formData).catch((err) => {
+            console.log("Nav links could not be updated", err)
+            return null
+        })
+
+        if (!updatedHeader) return fail(500, { message: "Nav links could not be updated" })
+
+        return {
+            message: "Nav links updated",
+        }
+
     }
 
 };

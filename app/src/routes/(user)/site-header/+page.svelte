@@ -13,6 +13,22 @@
 	import { toast } from 'svelte-sonner';
 	import { getFileUrl } from '@/utils/common';
 	import PreDebug from '@/dev/PreDebug.svelte';
+	import type { SinglePage } from '@/types/pages-and-stuff';
+	import { fly, slide } from 'svelte/transition';
+
+	const loadingStuff = {
+		changeTitle: false,
+		changeLogo: false,
+		removeLogo: false,
+		updateNavLinks: false
+	};
+
+	export let data: { siteHeader: SiteHeaderType; user: User };
+	const siteHeader = data?.siteHeader as SiteHeaderType;
+
+	let logoUrl = siteHeader.logo
+		? getFileUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
+		: '';
 
 	function enhancedLogoRemoval() {
 		return async ({ result }: { result: ActionResult }) => {
@@ -22,7 +38,7 @@
 		};
 	}
 
-	function enhancedLogoChange() {
+	function enhancedFormSubmission() {
 		return async ({ result }: { result: ActionResult }) => {
 			// Do Something
 
@@ -33,10 +49,11 @@
 						position: 'top-right',
 						class: 'mt-8'
 					});
+					await applyAction(result);
 					invalidateAll();
-					logoUrl = result?.data?.logo
-						? getFileUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo)
-						: '';
+					if (result?.data?.logo) {
+						logoUrl = getFileUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo);
+					}
 					break;
 				case 'failure':
 					toast.error(result?.data?.message, {
@@ -44,54 +61,21 @@
 						position: 'top-right',
 						class: 'mt-8'
 					});
+					await applyAction(result);
 					break;
 				default:
 					break;
 			}
 
 			loadingStuff.changeLogo = false;
-			await applyAction(result);
+			loadingStuff.removeLogo = false;
+			loadingStuff.updateNavLinks = false;
 		};
 	}
 
-	function enhancedNavLinksChange() {
-		return async ({ result }: { result: ActionResult }) => {
-			// Do Something
-			await applyAction(result);
-			invalidateAll();
-		};
-	}
+	let navLinks: SingleNavItem[] = siteHeader.nav_json;
 
-	function enhanceSubmission() {
-		return async ({ result }: { result: ActionResult }) => {
-			// Do Something
-			switch (result.type) {
-				case 'success':
-					toast.success(result?.data?.message, {
-						duration: 3000,
-						position: 'top-right',
-						class: 'mt-8'
-					});
-					break;
-				case 'failure':
-					toast.error(result?.data?.message, {
-						duration: 3000,
-						position: 'top-right',
-						class: 'mt-8'
-					});
-					break;
-				default:
-					break;
-			}
-			await applyAction(result);
-			invalidateAll();
-		};
-	}
-
-	let navLinks: SingleNavItem[] = [
-		{ title: 'A', href: '/a' },
-		{ title: 'B', href: '/a' }
-	];
+	console.log('siteHeader.nav_json', siteHeader.nav_json);
 
 	$: nav_json_internal = JSON.stringify(navLinks);
 
@@ -102,7 +86,7 @@
 		message: ''
 	} as {
 		q: string;
-		results: SingleNavItem[];
+		results: SinglePage[];
 		status: 'idle' | 'loading' | 'success' | 'error';
 		message?: string;
 	};
@@ -124,19 +108,6 @@
 	/**
 	 * User Searches for links
 	 */
-
-	const loadingStuff = {
-		changeTitle: false,
-		changeLogo: false,
-		removeLogo: false
-	};
-
-	export let data: { siteHeader: SiteHeaderType; user: User };
-	const siteHeader = data?.siteHeader as SiteHeaderType;
-
-	let logoUrl = siteHeader.logo
-		? getFileUrl(siteHeader?.collectionId, siteHeader.id, siteHeader.logo)
-		: '';
 </script>
 
 <UserPanelItemWrapper title="Site Title">
@@ -146,7 +117,7 @@
 				action="?/changeTitle"
 				class="flex items-center gap-2 text-black dark:text-black"
 				method="post"
-				use:enhance={enhanceSubmission}
+				use:enhance={enhancedFormSubmission}
 			>
 				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
 				<Input name="site_title" type="text" bind:value={siteHeader.site_title} />
@@ -165,7 +136,7 @@
 				action="?/removeLogo"
 				class="flex items-center gap-2 text-black dark:text-black"
 				method="post"
-				use:enhance={enhancedLogoChange}
+				use:enhance={enhancedFormSubmission}
 			>
 				<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
 				{#key logoUrl}
@@ -200,7 +171,7 @@
 			action="?/changeLogo"
 			class="grid w-full max-w-sm items-center gap-1.5"
 			method="post"
-			use:enhance={enhancedLogoChange}
+			use:enhance={enhancedFormSubmission}
 			enctype="multipart/form-data"
 		>
 			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
@@ -231,13 +202,32 @@
 		<div class="w-full">
 			<h2>Search for pages and add links:</h2>
 			<form class="flex gap-3" on:submit|preventDefault>
-				<Input bind:value={searchObj.q} type="text" placeholder="Search for pages" minlength={1} />
+				<Input
+					bind:value={searchObj.q}
+					type="text"
+					placeholder="Search for pages with title or slug"
+					minlength={1}
+				/>
+
 				<Button
 					type="submit"
 					on:click={searchPages}
 					disabled={searchObj.q?.trim()?.length < 1}
 					class="bg-black text-white">Search</Button
 				>
+				{#if searchObj.status === 'success'}
+					<div in:fly>
+						<Button
+							type="button"
+							on:click={() => {
+								searchObj.q = '';
+								searchObj.results = [];
+								searchObj.status = 'idle';
+							}}
+							class="bg-red-500/80 text-white">Reset</Button
+						>
+					</div>
+				{/if}
 			</form>
 
 			{#if searchObj.status === 'loading'}
@@ -252,7 +242,8 @@
 					<table class="table table-fixed items-center gap-2">
 						<tr>
 							<th>Page Title</th>
-							<th colspan="2">Actions</th>
+							<th>Slug</th>
+							<th class="w-200">Actions</th>
 						</tr>
 						{#each searchObj.results as result}
 							<tr class="m-3 py-3">
@@ -260,14 +251,23 @@
 									<span class="text-sm text-black dark:text-black">{result.title}</span>
 								</td>
 								<td>
-									<Button variant="outline" class="" href={result.href} target="_blank"
-										>Preview</Button
+									<span class="text-sm text-black dark:text-black">/{result.slug}</span>
+								</td>
+								<td>
+									<Button
+										variant="outline"
+										class=""
+										href={`/${data?.user?.username}/${result.slug}`}
+										target="_blank">Preview</Button
 									>
 								</td>
 								<td>
 									<Button
 										on:click={() => {
-											navLinks = [...navLinks, result];
+											navLinks = [
+												...navLinks,
+												{ title: result.title, href: `/${data?.user?.username}/${result.slug}` }
+											];
 										}}
 										class="bg-black text-white">Add</Button
 									>
@@ -278,7 +278,7 @@
 				{/if}
 			{:else if searchObj.status === 'error'}
 				<p class="text-red-500">Error fetching pages</p>
-			{/if}
+			{:else}{/if}
 		</div>
 		{#each navLinks as link, idx}
 			<span class="text-sm text-black dark:text-black">
@@ -286,7 +286,7 @@
 			</span>
 			<div class="flex flex-col items-center gap-2 md:flex-row">
 				<Input type="text" maxlength={20} bind:value={link.title} />
-				<Input type="text" bind:value={link.title} />
+				<Input type="text" bind:value={link.href} />
 				<button
 					on:click={() => {
 						navLinks = navLinks.filter((_, i) => i !== idx);
@@ -308,9 +308,24 @@
 			}}>{navLinks?.length > 0 ? 'Add another link' : 'Add link'}</Button
 		>
 		<!-- We'll send the ready json-->
-		<form action="?/changeNavLinks" method="post" use:enhance={enhancedNavLinksChange}>
+		<form action="?/changeNavLinks" method="post" use:enhance={enhancedFormSubmission}>
+			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
+
 			<input type="hidden" name="nav_json" bind:value={nav_json_internal} />
-			<Button class="bg-black text-white">Save/Update Links</Button>
+			<Button
+				type="submit"
+				on:click={() => {
+					loadingStuff.updateNavLinks = true;
+				}}
+				class="bg-black text-white"
+			>
+				{#if loadingStuff.updateNavLinks}
+					<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+					Updating Links
+				{:else}
+					Update Links
+				{/if}
+			</Button>
 		</form>
 	</div>
 </UserPanelItemWrapper>
