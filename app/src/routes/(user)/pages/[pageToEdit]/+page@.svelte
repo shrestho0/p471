@@ -176,7 +176,7 @@
 							{data?.page?.status == 'draft' ? 'Update Draft' : 'Draft'}</Button
 						>
 						<Button
-							disabled={buttonsDisabled}
+							disabled={buttonsDisabled && data?.page?.status == 'published'}
 							on:click={async () => await handleSubmissionClick('published')}
 						>
 							{#if loadingButtonType == 'published'}

@@ -53,6 +53,13 @@
 					invalidateAll();
 					if (result?.data?.logo) {
 						logoUrl = getLogoUrl(siteHeader?.collectionId, siteHeader.id, result.data.logo);
+
+						noImageSelected = true;
+
+						// clear image field
+						imageField.value = '';
+					} else {
+						logoUrl = '';
 					}
 					break;
 				case 'failure':
@@ -108,6 +115,19 @@
 	/**
 	 * User Searches for links
 	 */
+
+	let noImageSelected = true;
+	function handleImageChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		if (target.files?.length) {
+			noImageSelected = false;
+		} else {
+			noImageSelected = true;
+		}
+	}
+
+	let imageField: HTMLInputElement;
+	$: console.log('noImageSelected', noImageSelected);
 </script>
 
 <UserPanelItemWrapper title="Site Title">
@@ -176,23 +196,38 @@
 		>
 			<input type="hidden" name="siteHeaderId" value={siteHeader.id} />
 
-			<Label for="picture" class="text-black dark:text-black">Upload new logo</Label>
+			<Label for="picture" class="py-2 text-black dark:text-black">Upload new logo</Label>
 
-			<Input required name="logo" id="picture" type="file" accept="image/*" />
-			<Button
-				on:click={() => {
-					loadingStuff.changeLogo = true;
+			<input
+				bind:this={imageField}
+				on:change={() => {
+					noImageSelected = false;
 				}}
-				type="submit"
-				class="bg-black text-white"
-			>
-				{#if loadingStuff.changeLogo}
-					<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
-					Changing Logo
-				{:else}
-					Change Logo
-				{/if}
-			</Button>
+				required
+				name="logo"
+				id="picture"
+				type="file"
+				accept="image/*"
+				class="hover:file w-full rounded-sm border p-2 file:border-r file:border-transparent file:border-r-black file:bg-transparent"
+			/>
+
+			{#if !noImageSelected}
+				<button
+					type="submit"
+					on:click={(e) => {
+						loadingStuff.changeLogo = true;
+					}}
+					disabled={noImageSelected}
+					class="flex w-32 items-center justify-center rounded-md bg-black py-1 text-white transition-colors duration-300 ease-in-out hover:bg-gray-800"
+				>
+					{#if loadingStuff.changeLogo}
+						<CircleDashed class=" mr-2 h-4 w-4 animate-spin" />
+						Uploading
+					{:else}
+						Upload
+					{/if}
+				</button>
+			{/if}
 		</form>
 	</div>
 </UserPanelItemWrapper>
