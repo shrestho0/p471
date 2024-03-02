@@ -1,3 +1,6 @@
+<svelte:head>
+    <title>mCMS</title> 
+</svelte:head>
 <script>
 	import Hero from '@/ui/Hero.svelte';
 	import Faqs from './Faqs.svelte';
@@ -7,7 +10,7 @@
 <NavbarHomePage />
 <Hero />
 <Faqs />
-
+<!-- 
 <div id="debug" class="mb-32">
 	<div>Temp site urls for testing</div>
 	<ul>
@@ -25,4 +28,4 @@
 			- <a href="/a/b">Concept: User's page</a>
 		</li>
 	</ul>
-</div>
+</div> -->
