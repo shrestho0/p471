@@ -167,8 +167,8 @@
 
 						<Button
 							variant="outline"
+							disabled={buttonsDisabled && data?.page?.status == 'draft'}
 							on:click={async () => await handleSubmissionClick('draft')}
-							disabled={buttonsDisabled}
 						>
 							{#if loadingButtonType == 'draft'}
 								<CircleDashed class="mx-2 h-5 w-5 animate-spin" />
