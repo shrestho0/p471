@@ -39,7 +39,7 @@
 			<PageHeaderBlock
 				user={data?.admin}
 				title={sanitizeTitle($page.url.pathname)}
-				pages={userPanelPages}
+				pages={adminPanelPages}
 			/>
 			<PageContentBlock>
 				<slot />

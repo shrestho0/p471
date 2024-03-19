@@ -143,7 +143,7 @@
 						</DropdownMenu.Group>
 						<DropdownMenu.Separator />
 						<DropdownMenu.Item>
-							<form action="/logout" method="post">
+							<form class="w-full" action="/logout" method="post">
 								<button class="w-full p-2" type="submit">Logout</button>
 							</form>
 						</DropdownMenu.Item>

@@ -8,7 +8,7 @@
 	let loading = true;
 	export let tempMode: string;
 	import * as Alert from '$lib/components/ui/alert';
-	import { X } from 'lucide-svelte';
+	import { AlertTriangle, X } from 'lucide-svelte';
 	import { Button } from '@/components/ui/button';
 	import '$lib/ui/app.pcss';
 
@@ -67,4 +67,20 @@
 	{/if}
 {/if} -->
 <!-- {/if} -->
+{#if $page.data?.pageContent?.status == 'banned'}
+	<div class="absolute top-0 w-full bg-red-200 text-center">
+		<div class="flex w-full items-center justify-center gap-3">
+			<AlertTriangle />
+			<p>This page has been banned</p>
+		</div>
+	</div>
+{:else if $page.data?.pageContent?.status == 'draft'}
+	<div class="absolute top-0 w-full bg-cyan-200 text-center">
+		<div class="flex w-full items-center justify-center gap-3">
+			<AlertTriangle />
+			<p>This page is in draft</p>
+		</div>
+	</div>
+{/if}
+
 <slot />

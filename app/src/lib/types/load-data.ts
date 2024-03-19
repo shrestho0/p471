@@ -41,3 +41,12 @@ export type ResponseNewOrUpdatePage = {
         content: string;
     };
 }
+
+
+export type AdminDashboardAggData = {
+    totalPages: number;
+    todaysPages: number;
+    totalUsers: number;
+    todaysUsers: number;
+    bannedPages: number;
+}

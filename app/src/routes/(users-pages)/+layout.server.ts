@@ -53,12 +53,12 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
             if (!page) return error(404, ErrorMessages.PAGE_NOT_FOUND);
 
             // if draft, only owner can view this
-            if (page.status == "draft" && !(locals?.user?.id == page.user)) {
+            if (page.status == "draft" && !(locals?.user?.id == page.user) && !locals?.admin) {
                 return error(403, ErrorMessages.PAGE_NOT_PUBLIC);
                 // console.log("page banned")
             }
 
-            if (page.status == "banned" && !(locals?.user?.id == page.user)) {
+            if (page.status == "banned" && !(locals?.user?.id == page.user) && !locals?.admin) {
                 return error(403, ErrorMessages.PAGE_BANNED);
             }
 
