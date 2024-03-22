@@ -14,7 +14,7 @@
 </script>
 
 <div class="flex flex-col gap-4">
-	<DashboardHero user={data?.user} />
+	<DashboardHero {data} />
 	<UserDashboardCards statData={data} />
 </div>
 <!-- <PreDebug {data} /> -->

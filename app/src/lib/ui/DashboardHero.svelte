@@ -2,8 +2,8 @@
 	import type { Admin, User } from '@/types/users';
 
 	export let data: {
-		user: User | undefined;
-		admin: Admin | undefined;
+		user?: User;
+		admin?: Admin;
 	};
 </script>
 
@@ -52,7 +52,7 @@
 						class="block rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white transition hover:bg-indigo-700 focus:outline-none focus:ring"
 						type="button"
 					>
-						Create Post
+						Create Web Page
 					</a>
 				</div>
 			{/if}
