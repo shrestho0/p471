@@ -13,7 +13,7 @@
 	};
 </script>
 
-<footer class=" text-black dark:text-black">
+<footer class=" text-gray-700">
 	<div class=" flex flex-col items-center justify-between border p-3 md:flex-row">
 		<div class="left">
 			<p>{footerData.text}</p>
@@ -23,7 +23,7 @@
 				{#if footerData?.social_json?.length > 0}
 					{#each footerData.social_json as item}
 						<li>
-							<a href={item.href}>
+							<a href={item.href} class="text-gray-700 hover:text-gray-700/70">
 								{#if item.fa_icon}
 									<i class=" fa-brands fa-{item.fa_icon}"></i>
 								{:else}
@@ -36,8 +36,8 @@
 			</ul>
 		</nav>
 		<div class="w-auto">
-			<div class="flex items-center justify-center gap-3">
-				Powered By <Logo className="text-black dark:text-black" />
+			<div class="flex items-center justify-center gap-1.5">
+				Powered By <Logo className="text-gray-800" />
 			</div>
 		</div>
 	</div>

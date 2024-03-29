@@ -10,6 +10,7 @@
 >
 	{#if headerData.logo}
 		<img
+			style="max-height:200px; width:auto;"
 			src={getLogoUrl(headerData.collectionId, headerData.id, headerData.logo)}
 			alt={headerData.site_title}
 		/>
