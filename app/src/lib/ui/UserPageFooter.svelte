@@ -16,7 +16,7 @@
 <footer class=" text-gray-700">
 	<div class=" flex flex-col items-center justify-between border p-3 md:flex-row">
 		<div class="left">
-			<p>{footerData.text}</p>
+			<p class="text-gray-800">{footerData.text}</p>
 		</div>
 		<nav>
 			<ul class="flex items-center justify-center gap-2">
