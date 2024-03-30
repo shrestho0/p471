@@ -140,6 +140,11 @@
 							>
 								<a href="/{regularUser ? '' : '_/'}change-password"> Change Password </a>
 							</DropdownMenu.Item>
+							{#if regularUser}
+								<DropdownMenu.Item>
+									<a href="/update-info"> Update Account Info </a>
+								</DropdownMenu.Item>
+							{/if}
 						</DropdownMenu.Group>
 						<DropdownMenu.Separator />
 						<DropdownMenu.Item>

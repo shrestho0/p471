@@ -9,7 +9,7 @@ export const ErrorMessages = {
     ALL_FIELDS_REQUIRED: "All fields are required",
 
     USERNAME_INVALID: "Username is invalid. Must be alphanumeric or valid characters (_ - .)",
-    NAME_INVALID: "Name is invalid. Must be alphanumeric",
+    NAME_INVALID: "Name is invalid. Must be alphanumeric and 3-20 letters long",
     EMAIL_INVALID: "Email is invalid",
     PASSWORD_INVALID: "Password is invalid. Must be at least 8 characters long",
     PASSWORD_CONFIRM_INVALID: "Confirm Password must be same as password",

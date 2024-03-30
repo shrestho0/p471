@@ -9,10 +9,15 @@
 	import SidePanel from '@/ui/SidePanel.svelte';
 	import { customizationPages, userPanelPages } from '@/utils/authenticated-links';
 	import { toTitleCase } from '@/utils/common';
+	import { AlertTriangle } from 'lucide-svelte';
+	import { enhance } from '$app/forms';
+	import { toast } from 'svelte-sonner';
+	import type { ActionResult } from '@sveltejs/kit';
 	export let data: {
 		user: {
 			name: string;
 			email: string;
+			verified?: boolean;
 		};
 	};
 
@@ -27,6 +32,23 @@
 		title = title.trim();
 		// Capitalize first letter
 		return toTitleCase(title);
+	}
+
+	function enhancedResendVerification() {
+		return async ({ result }: { result: ActionResult }) => {
+			switch (result.type) {
+				case 'failure':
+					toast.error(result?.data?.message, {
+						position: 'top-center'
+					});
+					break;
+				case 'success':
+					toast.success(result?.data?.message, {
+						position: 'top-center'
+					});
+					break;
+			}
+		};
 	}
 </script>
 
@@ -53,6 +75,21 @@
 				pages={userPanelPages}
 				{customizationPages}
 			/>
+
+			{#if !data?.user?.verified}
+				<div class="card m-4 flex items-center justify-center bg-indigo-400 p-3">
+					<AlertTriangle />
+					Email Not Verified.
+					<form
+						method="post"
+						action="/update-info/?/verifyEmail"
+						use:enhance={enhancedResendVerification}
+					>
+						<button type="submit"> Resend verification </button>
+					</form>
+				</div>
+			{/if}
+
 			<PageContentBlock>
 				<slot />
 			</PageContentBlock>

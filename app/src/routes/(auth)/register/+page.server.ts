@@ -154,6 +154,12 @@ export const actions: Actions = {
             return fail(400, { message: "Failed to create user. Please ask adminstrator." });
         }
 
+        try {
+            await locals.pb.collection(dbTables.users).requestVerification(newUser.email)
+        } catch (_) { }
+
+        //
+
 
         return redirect(302, AppLinks.USER_LOGIN);
 
