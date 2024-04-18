@@ -17,22 +17,21 @@
 
 	export const menuitems = [
 		{
-			title: 'Features',
-			id: 'features'
+			title: 'About',
+			id: 'top'
 		},
 		{
-			title: 'About',
-			id: 'about'
+			title: 'Features',
+			id: 'features'
 		},
 		{
 			title: 'FAQs',
 			id: 'faqs'
 		},
 		{
-			title: 'Contact',
-			id: 'contact'
+			title: 'Contribute',
+			id: 'contribute'
 		},
-		{ title: 'Debug', id: 'debug' }
 	] as Array<{ title: string; id: string }>;
 
 	let innerWidth: number;
@@ -95,6 +94,7 @@
 <svelte:window bind:innerWidth bind:scrollY />
 
 <div
+	id="top"
 	class="fixed z-50 mx-auto flex w-full max-w-screen-xl flex-col {onMobile && navbareKajHobe
 		? 'bg-gray-50 dark:bg-stone-950'
 		: onMobile && open

@@ -50,12 +50,13 @@
 		{ name: 'password', placeholder: 'Password', type: 'password', value: '' }
 	];
 
-	function populateRandomData(idx: number) {
-		const randomData = dummyData[idx];
+	// function populateRandomData(idx: number) {
+	// 	const randomData = dummyData[idx];
 
-		fields[0].value = randomData.email;
-		fields[1].value = randomData.password;
-	}
+	// 	fields[0].value = randomData.email;
+	// 	fields[1].value = randomData.password;
+	// }
+
 	function onSubmit() {
 		// setTimeout(() => {
 		// isLoading = true;
@@ -70,7 +71,7 @@
 			<p class="text-muted-foreground text-sm">Enter email and password below to login</p>
 		</div>
 
-		<DummyDataSection {populateRandomData} />
+		<!-- <DummyDataSection {populateRandomData} /> -->
 
 		<div class="">
 			<form method="post" action="" on:submit={onSubmit} use:enhance={enhancedSubmission}>

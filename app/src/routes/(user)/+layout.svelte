@@ -13,6 +13,10 @@
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import type { ActionResult } from '@sveltejs/kit';
+	import Button from '@/components/ui/button/button.svelte';
+	import PreDebug from '@/dev/PreDebug.svelte';
+	import EmailNotVerified from '@/ui/EmailNotVerified.svelte';
+	import UnverifiedFunctionalityUse from '@/ui/UnverifiedFunctionalityUse.svelte';
 	export let data: {
 		user: {
 			name: string;
@@ -32,23 +36,6 @@
 		title = title.trim();
 		// Capitalize first letter
 		return toTitleCase(title);
-	}
-
-	function enhancedResendVerification() {
-		return async ({ result }: { result: ActionResult }) => {
-			switch (result.type) {
-				case 'failure':
-					toast.error(result?.data?.message, {
-						position: 'top-center'
-					});
-					break;
-				case 'success':
-					toast.success(result?.data?.message, {
-						position: 'top-center'
-					});
-					break;
-			}
-		};
 	}
 </script>
 
@@ -76,22 +63,16 @@
 				{customizationPages}
 			/>
 
-			{#if !data?.user?.verified}
-				<div class="card m-4 flex items-center justify-center bg-indigo-400 p-3">
-					<AlertTriangle />
-					Email Not Verified.
-					<form
-						method="post"
-						action="/update-info/?/verifyEmail"
-						use:enhance={enhancedResendVerification}
-					>
-						<button type="submit"> Resend verification </button>
-					</form>
-				</div>
-			{/if}
-
 			<PageContentBlock>
-				<slot />
+				{#if data.user.verified}
+					<slot />
+				{:else if $page.url.pathname.includes('dashboard')}
+					<EmailNotVerified />
+					<slot />
+				{:else}
+					<EmailNotVerified />
+					<UnverifiedFunctionalityUse />
+				{/if}
 			</PageContentBlock>
 		</aside>
 	</div>

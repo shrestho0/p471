@@ -137,7 +137,7 @@ export const actions: Actions = {
             await locals.pb.collection(dbTables.users).requestEmailChange(newEmail)
             return { message: "Email change request sent" }
 
-        } catch (err) {
+        } catch (err: any) {
             // console.log(err)
             // console.log(err?.data?.data?.message)
 

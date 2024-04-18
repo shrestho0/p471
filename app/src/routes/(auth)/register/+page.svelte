@@ -46,15 +46,15 @@
 		}
 	];
 
-	function populateRandomData(idx: number) {
-		const randomData = dummyData[idx];
+	// function populateRandomData(idx: number) {
+	// 	const randomData = dummyData[idx];
 
-		fields[0].value = randomData.email;
-		fields[1].value = randomData.username;
-		fields[2].value = randomData.name;
-		fields[3].value = randomData.password;
-		fields[4].value = randomData.password;
-	}
+	// 	fields[0].value = randomData.email;
+	// 	fields[1].value = randomData.username;
+	// 	fields[2].value = randomData.name;
+	// 	fields[3].value = randomData.password;
+	// 	fields[4].value = randomData.password;
+	// }
 
 	function enhancedSubmission() {
 		isLoading = true;
@@ -103,7 +103,7 @@
 			<h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
 			<p class="text-muted-foreground text-sm">Fill out the form below to create your account</p>
 		</div>
-		<DummyDataSection {populateRandomData} />
+		<!-- <DummyDataSection {populateRandomData} /> -->
 
 		<div class="">
 			<form

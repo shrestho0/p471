@@ -17,15 +17,17 @@
 	import { Button } from '@/components/ui/button';
 	import Alert from '@/components/ui/alert/alert.svelte';
 	import { slide } from 'svelte/transition';
-	import { CircleDashed, Minus } from 'lucide-svelte';
+	import { AlertTriangle, CircleDashed, Minus } from 'lucide-svelte';
 	import { copyToClipboard } from '@/utils/common';
-	import { applyAction } from '$app/forms';
+	import { applyAction, enhance } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
 	import { invalidateAll } from '$app/navigation';
 	import { toast } from 'svelte-sonner';
 	import { AppLinks, InternalApiEndpoints } from '@/utils/app-links';
 	import type { ResponseNewOrUpdatePage } from '@/types/load-data';
 	import macros from '@/utils/macros';
+	import EmailNotVerified from '@/ui/EmailNotVerified.svelte';
+	import UnverifiedFunctionalityUse from '@/ui/UnverifiedFunctionalityUse.svelte';
 
 	let pageData = {
 		title: {
@@ -177,100 +179,105 @@
 			<!-- <UserPanelItemWrapper> -->
 			<!-- Page Title Input-->
 			<PageContentBlock>
-				<!--Dev -->
-				<Button on:click={populateDummyData}>Populate Dummy Data</Button>
-				<!--Dev -->
+				{#if data.user.verified}
+					<!--Dev -->
+					<Button on:click={populateDummyData}>Populate Dummy Data</Button>
+					<!--Dev -->
 
-				<div class=" m-2 rounded-lg bg-white px-8 py-4 shadow-md md:m-4">
-					<form method="post" on:submit|preventDefault class="mt-3">
-						<label for="title" class="text-md block font-normal text-gray-700"> Title </label>
-						<div class="mt-1">
-							<Input
-								type="text"
-								bind:value={pageData.title.value}
-								name="title"
-								id="title"
-								disabled={loadingButtonType != ''}
-								required={true}
-								placeholder="Enter the title of the page"
-							/>
+					<div class=" m-2 rounded-lg bg-white px-8 py-4 shadow-md md:m-4">
+						<form method="post" on:submit|preventDefault class="mt-3">
+							<label for="title" class="text-md block font-normal text-gray-700"> Title </label>
+							<div class="mt-1">
+								<Input
+									type="text"
+									bind:value={pageData.title.value}
+									name="title"
+									id="title"
+									disabled={loadingButtonType != ''}
+									required={true}
+									placeholder="Enter the title of the page"
+								/>
 
-							{#if pageData.title.error}
-								<div transition:slide class="error p-2 text-sm text-red-500/90">
-									{pageData.title.error}
-								</div>
-							{/if}
-						</div>
-					</form>
-					<!-- Page Slug Input-->
-					<div class="mt-4">
-						<label for="slug" class="text-md block font-normal text-gray-700"> Slug </label>
-						<div class="mt-1">
-							<Input
-								required={true}
-								type="text"
-								name="slug"
-								id="slug"
-								disabled={loadingButtonType != ''}
-								bind:value={pageData.slug.value}
-								placeholder="Enter the slug of the page"
-							/>
-							{#if pageData.slug.error}
-								<div transition:slide class="error p-2 text-sm text-red-500/90">
-									{pageData.slug.error}
-								</div>
-							{/if}
-						</div>
-					</div>
-					<!-- Page Content Input-->
-					<div class="mt-4">
-						<label for="content" class="text-md block font-normal text-gray-700"> Content </label>
-						<div class="mt-1">
-							<Textarea
-								name="content"
-								id="content"
-								rows={15}
-								required={true}
-								disabled={loadingButtonType != ''}
-								bind:value={pageData.content.value}
-								placeholder="Enter the content of the page"
-							></Textarea>
-							{#if pageData.content.error}
-								<div transition:slide class="error p-2 text-sm text-red-500/90">
-									{pageData.content.error}
-								</div>
-							{/if}
-						</div>
-					</div>
-					<!-- Available macros -->
-					<!-- Available macros -->
-					<div class="mt-4">
-						<label for="macros" class="text-md block font-normal text-gray-700">
-							Available Macros:
-						</label>
-						<div class="mt-1 text-sm text-gray-700">
-							<div class="">
-								{#each macros as macroObj}
-									<div class="m-1 flex gap-2">
-										<Button
-											title="Copy to clipboard"
-											on:click={() => {
-												copyToClipboard(macroObj.macro);
-											}}
-											variant="outline"
-											size="sm"
-										>
-											{macroObj.macro}
-											<Minus />
-											{macroObj.name} ({data?.user[macroObj.userKey]})
-										</Button>
+								{#if pageData.title.error}
+									<div transition:slide class="error p-2 text-sm text-red-500/90">
+										{pageData.title.error}
 									</div>
-								{/each}
+								{/if}
+							</div>
+						</form>
+						<!-- Page Slug Input-->
+						<div class="mt-4">
+							<label for="slug" class="text-md block font-normal text-gray-700"> Slug </label>
+							<div class="mt-1">
+								<Input
+									required={true}
+									type="text"
+									name="slug"
+									id="slug"
+									disabled={loadingButtonType != ''}
+									bind:value={pageData.slug.value}
+									placeholder="Enter the slug of the page"
+								/>
+								{#if pageData.slug.error}
+									<div transition:slide class="error p-2 text-sm text-red-500/90">
+										{pageData.slug.error}
+									</div>
+								{/if}
 							</div>
 						</div>
+						<!-- Page Content Input-->
+						<div class="mt-4">
+							<label for="content" class="text-md block font-normal text-gray-700"> Content </label>
+							<div class="mt-1">
+								<Textarea
+									name="content"
+									id="content"
+									rows={15}
+									required={true}
+									disabled={loadingButtonType != ''}
+									bind:value={pageData.content.value}
+									placeholder="Enter the content of the page"
+								></Textarea>
+								{#if pageData.content.error}
+									<div transition:slide class="error p-2 text-sm text-red-500/90">
+										{pageData.content.error}
+									</div>
+								{/if}
+							</div>
+						</div>
+						<!-- Available macros -->
+						<!-- Available macros -->
+						<div class="mt-4">
+							<label for="macros" class="text-md block font-normal text-gray-700">
+								Available Macros:
+							</label>
+							<div class="mt-1 text-sm text-gray-700">
+								<div class="">
+									{#each macros as macroObj}
+										<div class="m-1 flex gap-2">
+											<Button
+												title="Copy to clipboard"
+												on:click={() => {
+													copyToClipboard(macroObj.macro);
+												}}
+												variant="outline"
+												size="sm"
+											>
+												{macroObj.macro}
+												<Minus />
+												{macroObj.name} ({data?.user[macroObj.userKey]})
+											</Button>
+										</div>
+									{/each}
+								</div>
+							</div>
+						</div>
+						<!-- </UserPanelItemWrapper> -->
 					</div>
-					<!-- </UserPanelItemWrapper> -->
-				</div>
+				{:else}
+					<EmailNotVerified />
+					<UnverifiedFunctionalityUse />
+				{/if}
 			</PageContentBlock>
 		</aside>
 	</div>
