@@ -64,7 +64,7 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
 
     }
 
-    console.log("/api/pages/new Page Data Received: ", pageData)
+    // console.log("/api/pages/new Page Data Received: ", pageData)
 
     return json({ success: true, message: "New page created successfully", redirect_to: `/pages/${newPage.id}` })
 

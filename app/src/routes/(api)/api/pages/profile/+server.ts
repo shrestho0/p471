@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ locals, request, url }) => {
         content: string;
     };
 
-    console.log("Page Data from /edit")
+    // console.log("Page Data from /edit")
 
     const responseObj: ResponseNewOrUpdatePage = {
         success: false,

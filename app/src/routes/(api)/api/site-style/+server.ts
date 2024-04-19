@@ -7,12 +7,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url, locals }) => {
     const u = url.searchParams.get('u');
-    console.log("Site style request received", url.searchParams);
-
-
+    // console.log("Site style request received", url.searchParams);
     let styleCss = "";
-
-
     if (u) {
 
         // find style from user
@@ -23,34 +19,20 @@ export const GET: RequestHandler = async ({ url, locals }) => {
         const ownerStyles = await locals.pb.collection(dbTables.style).getFirstListItem(`user.username = "${u}"`).catch((e) => {
             return null;
         });
-
         if (ownerStyles && ownerStyles?.styleJson) {
-
             styleCss = jsonToCSS(ownerStyles as unknown as SiteStyle);
             console.log("Owner styles found", "styleCss", styleCss, "ownerStyles", ownerStyles);
         }
-
     }
-
-
     if (!styleCss) {
         styleCss = jsonToCSS(defaultCssData);
     }
-
-
-
-
     // Return css
 
     const res = new Response(styleCss, {
-        headers: {
-            'Content-Type': 'text/css'
-        }
+        headers: { 'Content-Type': 'text/css' }
     });
 
     return res;
-
-
-    // Make this 
 
 }

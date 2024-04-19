@@ -19,9 +19,12 @@
 	import UserPageHeader from '@/ui/UserPageHeader.svelte';
 	import UserPageFooter from '@/ui/UserPageFooter.svelte';
 	import type { SiteFooterType, SiteHeaderType } from '@/types/customizations.js';
+	import type { SinglePage } from '@/types/pages-and-stuff';
 </script>
 
 <svelte:head>
+	<title>{data?.siteHeader?.site_title ? data.siteHeader.site_title + '| mCMS' : 'mCMS'}</title>
+
 	<link
 		rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"

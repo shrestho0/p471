@@ -24,7 +24,6 @@ export const actions: Actions = {
             password: string;
         };
 
-        // // @request.headers.x_site_key="01HPV38C41AYV5KA6BGJJEWHBK"
         // console.log(email, password); // DEBUG, this is illigal :3 :D
 
         if (!email || !password) return fail(400, { message: ErrorMessages.ALL_FIELDS_REQUIRED });
@@ -50,17 +49,9 @@ export const actions: Actions = {
             return fail(400, { message: ErrorMessages.PASSWORD_INCORRECT })
         }
 
-
-
-
         // Everthing should be fine here
-        // return {
-        //     message: "Logged in successfully",
-        // }
+
         return redirect(302, AppLinks.USER_DASHBOARD);
-
-
-
 
     }
 };

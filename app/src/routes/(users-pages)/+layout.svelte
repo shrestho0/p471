@@ -23,7 +23,6 @@
 </script>
 
 <svelte:head>
-	<!-- <title>{data?.header?.site_title ? data.header.site_title + '| mCMS' : 'mCMS'}</title> -->
 	<link
 		rel="stylesheet"
 		href="/api/site-style?u={$page.url.pathname?.split('/')[1]}&v={Math.random()}"

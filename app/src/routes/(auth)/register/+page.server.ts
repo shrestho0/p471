@@ -73,10 +73,7 @@ export const actions: Actions = {
             return fail(400, { fieldErrors });
         }
 
-
-
-
-        // Validations from server
+        // Validations from pb
 
         setPBSiteKey(locals.pb); // To tell pb that this is from web app
 

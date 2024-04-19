@@ -14,24 +14,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
     let q = url.searchParams.get('q')?.trim()?.toLowerCase() || ''
     let qu = url.searchParams.get('qu')?.trim()?.toLowerCase() || ''
 
-
-
-
     let filter = '';
-    // if (qu) {
-    //     filter += `(user.id~"${qu}" || user.username~"${qu}" || user.email~"${qu}" || user.name~"${qu}")`
-    // }
-
-    // if (q) {
-    //     q = q.toLowerCase()
-    //     if (q) filter += " &&"
-    //     filter += `( id~"${q}" ||  title~"${q}" || content~"${q}" || slug~"${q}" ) `
-    // }
-
-
-    // if (qu) {
-    //     filter += ` ${filter ? ' && ' : ''} ( user.id~"${q}" || user.username~"${q}" || user.email~"${q}" || user.name~"${q}") `
-    // }
 
     if (q && qu) {
         filter = ` (id~"${q}" || title~"${q}" || content~"${q}" || slug~"${q}") && (user.id~"${qu}" || user.username~"${qu}" || user.email~"${qu}" || user.name~"${qu}")`
@@ -47,10 +30,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         filter += `(status = "${status}")`
     }
 
-    // if (status && status != 'all') {
-    //     filter += `${filter ? '&&' : ''} (status = "${status})"`
-    // }
-
     // setPBSiteKey(locals.pb)
     const pages = await locals.pb.collection(dbTables.pages).getList(page, limit, {
         filter: filter,
@@ -63,8 +42,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
     console.log("pages", pages, filter, sort, limit, page, status, q, qu)
     return structuredClone(pages)
-
-
 };
 
 export const actions: Actions = {

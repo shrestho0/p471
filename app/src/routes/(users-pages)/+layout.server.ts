@@ -22,7 +22,6 @@ export const load: LayoutServerLoad = async ({ locals, params }) => {
     const { username, slug } = params;
 
 
-
     setPBSiteKey(locals.pb);
 
     if (username) {
