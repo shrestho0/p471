@@ -23,7 +23,12 @@
 </script>
 
 <svelte:head>
-	<title>{data?.siteHeader?.site_title ? data.siteHeader.site_title + '| mCMS' : 'mCMS'}</title>
+	<!-- <title>{data?.siteHeader?.site_title ? data.siteHeader.site_title + '| mCMS' : 'mCMS'}</title> -->
+
+	<title>
+		{data?.pageContent?.title ? data.pageContent.title + ' | ' : ''}
+		{data?.siteHeader?.site_title ? data.siteHeader.site_title : 'mCMS'}
+	</title>
 
 	<link
 		rel="stylesheet"
