@@ -24,6 +24,7 @@
 
 <svelte:head>
 	<title>
+		{data?.pageContent?.title ? data.pageContent.title + ' | ' : ''}
 		{data?.siteHeader?.site_title ? data.siteHeader.site_title : 'mCMS'}
 	</title>
 
